@@ -3,16 +3,11 @@
 ---
 ## Problem analysis
 
-Mobile gaming is boring. No matter how far you flap your bird or how many flowers you plant in your
-virtual town, eventually you always find yourself bored. This happens because tapping towards a higher score,
-more coins or a larger village is not having fun. It's grinding because you have nothing else to do.
-It's more a form of distraction than entertainment.
+Mobile gaming is boring. No matter how far you flap your bird or how many flowers you plant in your virtual town, eventually you always find yourself bored. This happens because tapping towards a higher score, more coins or a larger village is not having fun. It's grinding because you have nothing else to do. It's more a form of distraction than entertainment.
 
-This happens because current mobile gaming takes place by yourself on a five inch screen, with your fingers
-as the controllers.
+This happens because current mobile gaming takes place by yourself on a five inch screen, with your fingers as the controllers.
 
-We think that we can offer a solution, thanks to ARKit. With ARKit we can take the game off
-the five inch screen and out into the world. Previous attempts to do this, such as ---Examples could go here---, have been wildly successful.
+We think that we can offer a solution, thanks to ARKit. With ARKit we can take the game off the five inch screen and out into the world. Previous attempts to do this, such as ---Examples could go here---, have been wildly successful.
 
 Gaming on mobile with ARKit is better because it creates a more social, engaging and tangible experience.
 
