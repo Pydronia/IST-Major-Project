@@ -25,4 +25,7 @@ Our aim is to move Table Tennis into the virtual world using ARKit, and as a str
 ---
 ## Screen Designs
 
+Below is our screen design and mockup of the app describing the simple game flow as well as some visual mockups of the scene you'll be playing in. The raw picture can also be found [here](final_mockup.png).
+
+![Image Error](final_mockup.png)
 ---
