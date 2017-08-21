@@ -32,6 +32,14 @@ screen and out into the world. ARKit allows us to provide a far more real result
 ---
 ## Existing Solutions
 
+### Actual table tennis.
+Whilst playing an actual game of table tennis is ideal, the real world approach is hardly convenient due to the size, cost and mobility of the hardware required to play it. This means that even if you have all the hardware required to play, it is unlikely that you will do so frequently.
+
+### On-phone table tennis.
+Although this version solves the size, cost and mobility issues of the real game, it does this by removing most of the factors that make table tennis fun in the first place. Table tennis is fun because you move around, interact socially and get a satisfying result when you hit the ball. This solution does not full fill any of these factors.
+
+### Wii table tennis.
+Wii table tennis manages to offer some of the activity, social interaction and tangibility of real table tennis without some of the cost limitations. Even with the improvement in terms of cost, wii table tennis is still limited in that it is still contained in a single place, and all the players must be in that place.
 ---
 ## Screen Designs
 
