@@ -1,5 +1,5 @@
 # Proposal
-
+###### Jack Carey and Madoc Cottle
 ---
 ## Problem analysis
 
