@@ -11,7 +11,7 @@ We think that we can offer a solution, thanks to ARKit. With ARKit we can take t
 
 ARKit is an exciting new technology that will almost certainly become the biggest platform for AR experiences. In the past before the technology was announced, Augmented Reality was a niche technology that was complicated to establish and program. This meant that it was not wide spread and apps that existed then were buggy and not refined experiences. With the release of ARKit, AR experiences will become more realistic, refined and performant. They will become easier to create, letting developers focus on creating feature rich and polished experiences.
 
-We believe that we should get onto the ARKit bandwagon early to establish a grounding in the new technology and be one of the first to release an awesome app into the app store. 
+We believe that we should get onto the ARKit bandwagon early to establish a grounding in the new technology and be one of the first to release an awesome app into the app store.
 
 Gaming on mobile with ARKit is better because it creates a more social, engaging and tangible experience.
 
@@ -29,14 +29,22 @@ Our aim is to move Table Tennis into the virtual world using ARKit, and as a str
 ### Actual table tennis.
 Whilst playing an actual game of table tennis is ideal, the real world approach is hardly convenient due to the size, cost and mobility of the hardware required to play it. Real world table tennis also requires multiple players to be in the same space at once. This means that even if you have all the hardware required to play, it is unlikely that you will do so frequently.
 
+![Someone playing table tennis](../pictures/existing/table-tennis.jpg)
+
 ### iOS Table Tennis Touch.
 Although this version solves the size, cost and mobility issues of the real game, it does this by removing most of the factors that make table tennis fun in the first place. Table tennis is fun because you move around, interact socially and get a satisfying result when you hit the ball. This solution does not full fill any of these factors.
+
+![Table Tennis Touch gameplay](../pictures/existing/tttouch.jpg)
 
 ### Wii Play Table Tennis.
 Wii table tennis manages to offer some of the activity, social interaction and tangibility of real table tennis without some of the cost limitations. Even with the improvement in terms of cost, wii table tennis is still limited in that it is still contained in a single place, and all the players must be in that place. This means that although wii table tennis may not be quite as satisfying as real table tennis, it's social aspects make it a superior game.
 
+![Wii Table Tennis gameplay](../pictures/existing/wiiTableTennis.jpg)
+
 ### Virtual Reality Table Tennis
 Virtual reality tables tennis lacks some of the engaging qualities of actual tables tennis, such the physical feedback of hitting the ball. At the same time, virtual reality table tennis still suffers from the space requirements, cost and immobility of real table tennis. One area of advantage virtual reality table tennis does have is that it does not need all of the players to be in the same physical area to play together.
+
+![Table tenis being played in virtual reality](../pictures/existing/recroom.jpg)
 
 ### Solution
 A table tennis experience that provides the social interactivity, movement and tangibility of real table tennis, without the limitations. The closest thing to this would be ARKit table tennis. A version of table tennis using ARKit would not suffer from the cost and mobility constraints of real table tennis, and only a fraction of the size constraints. This is due to the iphone being easy to take with you anywhere, and apps for them being commercially viable at only cheap prices. At the same time, an ARKit version of table tennis would still be able to provide most of the benefits of real table tennis, such as the social interaction, tangibility and physical movement of real table tennis.
