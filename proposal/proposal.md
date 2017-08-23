@@ -23,17 +23,23 @@ Our aim is to move Table Tennis into the virtual world using ARKit, and as a str
 ## Existing Solutions
 
 ### Actual table tennis.
-Whilst playing an actual game of table tennis is ideal, the real world approach is hardly convenient due to the size, cost and mobility of the hardware required to play it. This means that even if you have all the hardware required to play, it is unlikely that you will do so frequently.
+Whilst playing an actual game of table tennis is ideal, the real world approach is hardly convenient due to the size, cost and mobility of the hardware required to play it. Real world table tennis also requires multiple players to be in the same space at once. This means that even if you have all the hardware required to play, it is unlikely that you will do so frequently.
 
-### On-phone table tennis.
+### Ios table tennis touch.
 Although this version solves the size, cost and mobility issues of the real game, it does this by removing most of the factors that make table tennis fun in the first place. Table tennis is fun because you move around, interact socially and get a satisfying result when you hit the ball. This solution does not full fill any of these factors.
 
-### Wii table tennis.
-Wii table tennis manages to offer some of the activity, social interaction and tangibility of real table tennis without some of the cost limitations. Even with the improvement in terms of cost, wii table tennis is still limited in that it is still contained in a single place, and all the players must be in that place.
+### Wii play table tennis.
+Wii table tennis manages to offer some of the activity, social interaction and tangibility of real table tennis without some of the cost limitations. Even with the improvement in terms of cost, wii table tennis is still limited in that it is still contained in a single place, and all the players must be in that place. This means that although wii table tennis may not be quite as satisfying as real table tennis, it's social aspects make it a superior game.
+
+### Virtual reality table tennis
+Virtual reality tables tennis lacks some of the engaging qualities of actual tables tennis, such the physical feedback of hitting the ball. At the same time, virtual reality table tennis still suffers from the space requirements, cost and immobility of real table tennis. One area of advantage virtual reality table tennis does have is that it does not need all of the players to be in the same physical area to play together.
+
+### Solution
+A table tennis experience that provides the social interactivity, movement and tangibility of real table tennis, without the limitations
+
 ---
 ## Screen Designs
 
 Below is our screen design and mockup of the app describing the simple game flow as well as some visual mockups of the scene you'll be playing in. The raw picture can also be found [here](final_mockup.png).
 
-![Image Error](final_mockup.png)
 ---
