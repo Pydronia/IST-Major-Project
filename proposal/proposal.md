@@ -9,9 +9,9 @@ This happens because current mobile gaming takes place by yourself on a five inc
 
 We think that we can offer a solution, thanks to ARKit. With ARKit we can take the game off the five inch screen and out into the world. Previous attempts to do this, such as Pokémon GO, Nintento 3DS, and Ingress has been wildly successful.
 
-ARKit is an exciting new technology that will almost certainly become the biggest platform for AR experiences. In the past before the technology was announced, Augmented Reality was a niche technology that was complicated to establish and program. This meant that it was not wide spread and apps that existed then were buggy and not refined experiences. With the release of ARKit, AR experiences will become more realistic, refined and performant. They will become easier to create, letting developers focus on creating feature rich and polished experiences.
+ARKit is an exciting new technology that will almost certainly become the biggest platform for AR experiences. In the past, Augmented Reality was a niche technology that was complicated to create and program. This meant that it was not wide spread and apps that existed were buggy and not refined experiences. With the release of ARKit, AR experiences will become more realistic, refined and performant. They will become easier to create, letting developers focus on creating feature rich and polished experiences.
 
-We believe that we should get onto the ARKit bandwagon early to establish a grounding in the new technology and be one of the first to release an awesome app into the app store.
+We believe that we should get involved in ARKit early to establish a grounding in the new technology and be one of the first to release an awesome app into the app store.
 
 Gaming on mobile with ARKit is better because it creates a more social, engaging and tangible experience.
 
