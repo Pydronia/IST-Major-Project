@@ -9,6 +9,10 @@ This happens because current mobile gaming takes place by yourself on a five inc
 
 We think that we can offer a solution, thanks to ARKit. With ARKit we can take the game off the five inch screen and out into the world. Previous attempts to do this, such as Pokémon GO, Nintento 3DS, and Ingress has been wildly successful.
 
+ARKit is an exciting new technology that will almost certainly become the biggest platform for AR experiences. In the past before the technology was announced, Augmented Reality was a niche technology that was complicated to establish and program. This meant that it was not wide spread and apps that existed then were buggy and not refined experiences. With the release of ARKit, AR experiences will become more realistic, refined and performant. They will become easier to create, letting developers focus on creating feature rich and polished experiences.
+
+We believe that we should get onto the ARKit bandwagon early to establish a grounding in the new technology and be one of the first to release an awesome app into the app store. 
+
 Gaming on mobile with ARKit is better because it creates a more social, engaging and tangible experience.
 
 The social aspect of gaming, one which is often neglected, is perhaps one of it's most important. Humans are social creatures, and engaging with others makes almost any activity feel better. This means that for a person to really enjoy a game, rather than just be distracted by it, they should play that game with others.
@@ -42,4 +46,5 @@ A table tennis experience that provides the social interactivity, movement and t
 
 Below is our screen design and mockup of the app describing the simple game flow as well as some visual mockups of the scene you'll be playing in. The raw picture can also be found [here](final_mockup.png).
 
+![Image Error](final_mockup.png)
 ---
