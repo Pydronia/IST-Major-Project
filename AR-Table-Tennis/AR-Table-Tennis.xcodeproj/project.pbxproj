@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0400D2701F676FB800FDCFE3 /* SceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0400D26F1F676FB800FDCFE3 /* SceneViewController.swift */; };
+		04098BDC1F78AA220014C2B4 /* MathHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04098BDB1F78AA220014C2B4 /* MathHelper.swift */; };
 		044DFDF51F5CC0B600E0760B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DFDF41F5CC0B600E0760B /* AppDelegate.swift */; };
 		044DFDF71F5CC0B600E0760B /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 044DFDF61F5CC0B600E0760B /* art.scnassets */; };
 		044DFDF91F5CC0B600E0760B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DFDF81F5CC0B600E0760B /* ViewController.swift */; };
@@ -16,12 +18,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0400D26F1F676FB800FDCFE3 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
+		04098BDB1F78AA220014C2B4 /* MathHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathHelper.swift; sourceTree = "<group>"; };
 		044DFDF11F5CC0B600E0760B /* AR-Table-Tennis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-Table-Tennis.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		044DFDF41F5CC0B600E0760B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		044DFDF61F5CC0B600E0760B /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		044DFDF81F5CC0B600E0760B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		044DFDFB1F5CC0B600E0760B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		044DFDFD1F5CC0B600E0760B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		044DFDFD1F5CC0B600E0760B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = art.scnassets/Assets.xcassets; sourceTree = "<group>"; };
 		044DFE001F5CC0B600E0760B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		044DFE021F5CC0B600E0760B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -56,11 +60,13 @@
 		044DFDF31F5CC0B600E0760B /* AR-Table-Tennis */ = {
 			isa = PBXGroup;
 			children = (
-				044DFDF41F5CC0B600E0760B /* AppDelegate.swift */,
 				044DFDF61F5CC0B600E0760B /* art.scnassets */,
-				044DFDF81F5CC0B600E0760B /* ViewController.swift */,
-				044DFDFA1F5CC0B600E0760B /* Main.storyboard */,
 				044DFDFD1F5CC0B600E0760B /* Assets.xcassets */,
+				04098BDB1F78AA220014C2B4 /* MathHelper.swift */,
+				0400D26F1F676FB800FDCFE3 /* SceneViewController.swift */,
+				044DFDF81F5CC0B600E0760B /* ViewController.swift */,
+				044DFDF41F5CC0B600E0760B /* AppDelegate.swift */,
+				044DFDFA1F5CC0B600E0760B /* Main.storyboard */,
 				044DFDFF1F5CC0B600E0760B /* LaunchScreen.storyboard */,
 				044DFE021F5CC0B600E0760B /* Info.plist */,
 			);
@@ -140,6 +146,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0400D2701F676FB800FDCFE3 /* SceneViewController.swift in Sources */,
+				04098BDC1F78AA220014C2B4 /* MathHelper.swift in Sources */,
 				044DFDF91F5CC0B600E0760B /* ViewController.swift in Sources */,
 				044DFDF51F5CC0B600E0760B /* AppDelegate.swift in Sources */,
 			);
