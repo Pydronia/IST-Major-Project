@@ -8,24 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		04098BDC1F78AA220014C2B4 /* MathHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04098BDB1F78AA220014C2B4 /* MathHelper.swift */; };
-		040AA3521F85E8AF0060ACCE /* SceneKit Scene.scn in Resources */ = {isa = PBXBuildFile; fileRef = 040AA3511F85E8AF0060ACCE /* SceneKit Scene.scn */; };
 		044DFDF51F5CC0B600E0760B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DFDF41F5CC0B600E0760B /* AppDelegate.swift */; };
 		044DFDF91F5CC0B600E0760B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DFDF81F5CC0B600E0760B /* ViewController.swift */; };
 		044DFDFC1F5CC0B600E0760B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 044DFDFA1F5CC0B600E0760B /* Main.storyboard */; };
 		044DFE011F5CC0B600E0760B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 044DFDFF1F5CC0B600E0760B /* LaunchScreen.storyboard */; };
+		048929B71F873AB100A947F2 /* Resources.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 048929B61F873AB100A947F2 /* Resources.scnassets */; };
 		04DF1BD11F849398005F6AD2 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DF1BD01F849398005F6AD2 /* GameState.swift */; };
 		04DF1BD61F84D9A8005F6AD2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04DF1BD51F84D9A8005F6AD2 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		04098BDB1F78AA220014C2B4 /* MathHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathHelper.swift; sourceTree = "<group>"; };
-		040AA3511F85E8AF0060ACCE /* SceneKit Scene.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = "SceneKit Scene.scn"; sourceTree = "<group>"; };
 		044DFDF11F5CC0B600E0760B /* AR-Table-Tennis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-Table-Tennis.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		044DFDF41F5CC0B600E0760B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		044DFDF81F5CC0B600E0760B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		044DFDFB1F5CC0B600E0760B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		044DFE001F5CC0B600E0760B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		044DFE021F5CC0B600E0760B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		048929B61F873AB100A947F2 /* Resources.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Resources.scnassets; sourceTree = "<group>"; };
 		04DF1BD01F849398005F6AD2 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		04DF1BD51F84D9A8005F6AD2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,14 +61,14 @@
 			isa = PBXGroup;
 			children = (
 				04098BDB1F78AA220014C2B4 /* MathHelper.swift */,
+				04DF1BD01F849398005F6AD2 /* GameState.swift */,
 				044DFDF81F5CC0B600E0760B /* ViewController.swift */,
 				044DFDF41F5CC0B600E0760B /* AppDelegate.swift */,
 				044DFDFA1F5CC0B600E0760B /* Main.storyboard */,
 				044DFDFF1F5CC0B600E0760B /* LaunchScreen.storyboard */,
 				044DFE021F5CC0B600E0760B /* Info.plist */,
-				04DF1BD01F849398005F6AD2 /* GameState.swift */,
 				04DF1BD51F84D9A8005F6AD2 /* Assets.xcassets */,
-				040AA3511F85E8AF0060ACCE /* SceneKit Scene.scn */,
+				048929B61F873AB100A947F2 /* Resources.scnassets */,
 			);
 			path = "AR-Table-Tennis";
 			sourceTree = "<group>";
@@ -132,7 +132,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				040AA3521F85E8AF0060ACCE /* SceneKit Scene.scn in Resources */,
+				048929B71F873AB100A947F2 /* Resources.scnassets in Resources */,
 				044DFE011F5CC0B600E0760B /* LaunchScreen.storyboard in Resources */,
 				04DF1BD61F84D9A8005F6AD2 /* Assets.xcassets in Resources */,
 				044DFDFC1F5CC0B600E0760B /* Main.storyboard in Resources */,
