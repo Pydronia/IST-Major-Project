@@ -187,17 +187,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    }
    
    
-   func addBallAtTransform(_ transform: SCNMatrix4) {
-      /*
-      let ballNode = SCNNode(geometry: SCNSphere(radius: 0.05))
-      ballNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
-      ballNode.transform = transform
-      scnScene.rootNode.addChildNode(ballNode)
-      */
+   func addTable(_ transform: SCNMatrix4) {
+ 
       // TODO: need to check this works
-      let table = SCNReferenceNode(url: URL(fileURLWithPath: "Resources.scnassets/Models/table.scn"))!
-      scnScene.rootNode.addChildNode(table)
+      
+      let path = Bundle.main.path(forResource: "Table", ofType: "scn", inDirectory: "Resources.scnassets/Models")
+      let referenceURL = URL(fileURLWithPath: path!)
+      
+      let table = SCNReferenceNode(url: referenceURL)!
       table.load()
+      table.transform = transform
+      scnScene.rootNode.addChildNode(table)
+      
+      gameState.currentState = .ready
+      
+ 
       
    }
    
@@ -236,10 +240,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          let viewCenter = CGPoint(x: scnView.bounds.width/2, y: scnView.bounds.height/2)
          if let hit = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
             // TODO: add Anchor instead of node (?)
-            addBallAtTransform(SCNMatrix4(hit.worldTransform))
+            addTable(SCNMatrix4(hit.worldTransform))
          } else if let hit = scnView.hitTest(viewCenter, types: .featurePoint).last {
             // TODO: same as above
-            addBallAtTransform(SCNMatrix4(hit.worldTransform))
+            addTable(SCNMatrix4(hit.worldTransform))
          }
       default:
          throwBall()
@@ -252,6 +256,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    // MARK: - ARSCNViewDelegate
    
    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+      // TODO: Remove fallen balls
       switch gameState.currentState {
       case .setup:
          break
@@ -269,6 +274,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       }
       
       DispatchQueue.main.async {
+         // TODO: Fix error messages
          self.updateTrackingErrors(for: frame)
       }
    }
