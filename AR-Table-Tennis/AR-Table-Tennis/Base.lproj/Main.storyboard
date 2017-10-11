@@ -38,6 +38,16 @@
                                     <constraint firstAttribute="height" constant="32" id="XMz-Tg-EJh"/>
                                 </constraints>
                             </imageView>
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="kF2-nH-ILj">
+                                <rect key="frame" x="222.5" y="15" width="222" height="40"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.75294306506849318" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="dTL-ad-qEd"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -46,8 +56,11 @@
                             <constraint firstItem="k0v-nR-o8n" firstAttribute="trailing" secondItem="0rh-10-cA2" secondAttribute="trailing" id="6Ga-OZ-am9"/>
                             <constraint firstItem="Wgm-Ne-muk" firstAttribute="centerY" secondItem="k7W-jO-VB6" secondAttribute="centerY" id="76H-fo-BVE"/>
                             <constraint firstItem="rfy-m9-dfO" firstAttribute="centerX" secondItem="k7W-jO-VB6" secondAttribute="centerX" id="BRr-UT-85i"/>
+                            <constraint firstItem="kF2-nH-ILj" firstAttribute="centerX" secondItem="k7W-jO-VB6" secondAttribute="centerX" id="HKZ-a6-K7O"/>
                             <constraint firstItem="k0v-nR-o8n" firstAttribute="top" secondItem="0rh-10-cA2" secondAttribute="top" id="HcZ-p7-6Au"/>
                             <constraint firstAttribute="bottom" secondItem="rfy-m9-dfO" secondAttribute="bottom" constant="30" id="HiB-Jc-0zg"/>
+                            <constraint firstItem="kF2-nH-ILj" firstAttribute="width" secondItem="k7W-jO-VB6" secondAttribute="width" multiplier="0.333" id="KM2-vu-vLy"/>
+                            <constraint firstItem="kF2-nH-ILj" firstAttribute="top" secondItem="k7W-jO-VB6" secondAttribute="top" constant="15" id="PS7-kr-2zJ"/>
                             <constraint firstItem="k0v-nR-o8n" firstAttribute="leading" secondItem="0rh-10-cA2" secondAttribute="leading" id="aVB-S7-Bg3"/>
                             <constraint firstItem="k0v-nR-o8n" firstAttribute="bottom" secondItem="0rh-10-cA2" secondAttribute="bottom" id="h7M-QW-UHw"/>
                         </constraints>
@@ -55,6 +68,7 @@
                     </view>
                     <connections>
                         <outlet property="crosshair" destination="Wgm-Ne-muk" id="Mf3-vg-1Oh"/>
+                        <outlet property="errorLabel" destination="kF2-nH-ILj" id="UBi-gH-Zx0"/>
                         <outlet property="scnView" destination="k0v-nR-o8n" id="dZb-oT-fyd"/>
                         <outlet property="statusLabel" destination="rfy-m9-dfO" id="ZFI-pl-oxj"/>
                     </connections>

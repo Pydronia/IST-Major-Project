@@ -17,6 +17,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    // MARK: Outlets
    @IBOutlet weak var scnView: ARSCNView!
    @IBOutlet weak var statusLabel: UILabel!
+   @IBOutlet weak var errorLabel: UILabel!
    @IBOutlet weak var crosshair: UIImageView!
    
    // MARK: Globals
@@ -24,8 +25,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    var gameState: GameState!
    
    var planeNodes: [SCNNode] = []
-   
-   var currentStatus: String? = nil
    
    var ambLight: SCNNode!
    
@@ -54,6 +53,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       gameState = GameState(initialState: .planeMapping)
       statusLabel.layer.cornerRadius = 10
+      errorLabel.layer.cornerRadius = 10
+      
    }
    
    // Load the scene and do some setup
@@ -146,22 +147,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    // MARK: - Helper Functions
    
-   func showMessage(_ message: String, temp: Bool, seconds: Double?){
+   func showMessage(_ message: String?){
       
-      if !temp {
-         currentStatus = message
+      if message == nil {
+         errorLabel.isHidden = true
+      } else {
+         errorLabel.isHidden = false
+         errorLabel.text = message!
       }
       
-      statusLabel.text = message
       
-      if temp && seconds != nil {
-         DispatchQueue.main.asyncAfter(deadline: .now() + seconds!) {
-            if self.statusLabel.text == message {
-               self.statusLabel.text = self.currentStatus
-            }
-            
-         }
-      }
+      
+      
       
       /*
       if message == nil {
@@ -335,14 +332,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       case .limited(let reason):
          switch reason {
          case .excessiveMotion:
-            showMessage("Too much movement!", temp: true, seconds: nil)
+            showMessage("Too much movement!")
          case .insufficientFeatures:
-            showMessage("Not enough distinct features!", temp: true, seconds: nil)
-         default:
-            showMessage("Limited Tracking", temp: true, seconds: nil)
+            showMessage("Not enough distinct features!")
+         case .initializing:
+            showMessage("Loading...")
          }
       default:
-         statusLabel.text = currentStatus
+         showMessage(nil)
       }
       
    }
