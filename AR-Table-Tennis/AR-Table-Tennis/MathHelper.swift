@@ -25,5 +25,10 @@ extension SCNVector3 {
     static func * (left: SCNVector3, right: Float) -> SCNVector3 {
         return SCNVector3(left.x * right, left.y * right, left.z * right)
     }
+   /*
+   static func worldPositionFromTransform(_ transform: SCNMatrix4) -> SCNVector3 {
+      return SCNVector3(transform.m41, transform.m42, transform.m43)
+   }
+    */
 }
 

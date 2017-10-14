@@ -38,6 +38,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       scnView.isPlaying = true
       
       // Ambient light
+      
       ambLight = SCNNode()
       ambLight.position = SCNVector3(0,0,0)
       ambLight.light = SCNLight()
@@ -48,7 +49,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       //DEBUG
       scnView.showsStatistics = true
-      //scnView.debugOptions = .showPhysicsShapes
+      scnView.debugOptions = ARSCNDebugOptions.showWorldOrigin
       
       
       gameState = GameState(initialState: .planeMapping)
@@ -136,8 +137,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       ballNode.position = scnView.pointOfView!.position + direction * 0.1
       
-      //direction.y = 0.5
-      
       ballNode.physicsBody?.applyForce(direction * 5, asImpulse: true)
       
       
@@ -185,14 +184,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    
    func addTable(_ transform: SCNMatrix4) {
- 
-      // TODO: need to check this works
       
       let path = Bundle.main.path(forResource: "Table", ofType: "scn", inDirectory: "Resources.scnassets/Models")
       let referenceURL = URL(fileURLWithPath: path!)
       
       let table = SCNReferenceNode(url: referenceURL)!
       table.load()
+      // TODO: Make function to get world position easily
       table.transform = transform
       scnScene.rootNode.addChildNode(table)
       
@@ -236,10 +234,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       case .setup:
          let viewCenter = CGPoint(x: scnView.bounds.width/2, y: scnView.bounds.height/2)
          if let hit = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
-            // TODO: add Anchor instead of node (?)
+            print(hit.worldTransform.debugDescription)
             addTable(SCNMatrix4(hit.worldTransform))
          } else if let hit = scnView.hitTest(viewCenter, types: .featurePoint).last {
-            // TODO: same as above
             addTable(SCNMatrix4(hit.worldTransform))
          }
       default:
@@ -271,7 +268,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       }
       
       DispatchQueue.main.async {
-         // TODO: Fix error messages
          self.updateTrackingErrors(for: frame)
       }
    }
@@ -339,7 +335,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             showMessage("Loading...")
          }
       default:
-         showMessage(nil)
+         
+         guard let brightness = frame.lightEstimate?.ambientIntensity else {
+            showMessage(nil)
+            break
+         }
+         
+         if brightness < 100 {
+            showMessage("Too dark!")
+         } else {
+            showMessage(nil)
+         }
+         
       }
       
    }
