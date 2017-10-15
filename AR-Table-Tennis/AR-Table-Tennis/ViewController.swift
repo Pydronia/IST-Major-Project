@@ -27,6 +27,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    var planeNodes: [SCNNode] = []
    
    var ambLight: SCNNode!
+    
+    var scoreboard: [Int] = []
    
    // MARK: - Setup Functions
    
@@ -128,6 +130,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    // MARK: Ball Throwing
    
    func throwBall(){
+    /*
       let ballNode = SCNNode(geometry: SCNSphere(radius: 0.02))
       ballNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
       ballNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
@@ -142,7 +145,70 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       
       scnScene.rootNode.addChildNode(ballNode)
+ */
    }
+    
+    // Test for full game ball throwing:
+    
+    func ball() {
+        let ballNode = SCNNode(geometry: SCNSphere(radius: 0.02))
+        ballNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+        ballNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
+    }
+    
+    func serve(ball: SCNNode) {
+        //path up and down relative to table
+    }
+    
+    func hit() {
+        //send ball in direction it is hit
+    }
+    
+    func tableContact(hit: Int) {
+        
+        /*
+            0
+         [1][2]
+         ------
+         [3][4]
+            5
+             */
+        //register area of contact on table, update scoreboard
+        var previousHit = 5
+        var playerScore = 0
+        var AiScore = 0
+        switch hit {
+        case 1,2:
+            if previousHit == 0 {
+                playerScore += 1
+            } else if previousHit == 5 {
+                AiScore += 1
+            } else if previousHit == 3 || previousHit == 4 {
+                AiScore += 1
+            }
+        case 3,4:
+            if previousHit == 0 {
+                AiScore += 1
+            } else if previousHit == 5 {
+                playerScore += 1
+            } else if previousHit == 1 || previousHit == 2 {
+                playerScore += 1
+            }
+        default:
+            let test = "test"
+
+        }
+        previousHit = hit
+    }
+    
+    func checkPreviousHit() -> Int {
+        let number = 10
+        return number
+    }
+    
+    func ai() {
+        //create opposing paddle which will return ball with some degree of randomness
+    }
    
    // MARK: - Helper Functions
    
@@ -350,6 +416,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       }
       
    }
+    
    
    func session(_ session: ARSession, didFailWithError error: Error) {
       // Present an error message to the user
