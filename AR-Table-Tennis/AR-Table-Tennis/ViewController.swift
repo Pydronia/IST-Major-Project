@@ -28,7 +28,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    var ambLight: SCNNode!
     
-    var scoreboard: [Int] = []
+   var scoreboard: [Int] = []
    
    var table: SCNReferenceNode!
    var paddle: SCNNode!
@@ -138,10 +138,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    // MARK: Ball Throwing
    
    func throwBall(){
-    /*
+
       let ballNode = SCNNode(geometry: SCNSphere(radius: 0.02))
-      ballNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+      ballNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "Resources.scnassets/Textures/sphereTex.png")
       ballNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
+      ballNode.physicsBody?.restitution = 0.9
       
       // TODO: Convert to extension
       let direction = scnView.pointOfView!.forwardDirection
@@ -150,73 +151,65 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       ballNode.physicsBody?.applyForce(direction * 5, asImpulse: true)
       
-      
-      
       scnScene.rootNode.addChildNode(ballNode)
- */
    }
     
-    // Test for full game ball throwing:
-    
-    func ball() {
-        let ballNode = SCNNode(geometry: SCNSphere(radius: 0.02))
-        ballNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-        ballNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
-    }
-    
-    func serve(ball: SCNNode) {
-        //path up and down relative to table
-    }
-    
-    func hit() {
-        //send ball in direction it is hit
-    }
-    
-    func tableContact(hit: Int) {
-        
-        /*
-            0
-         [1][2]
-         ------
-         [3][4]
-            5
-             */
-        //register area of contact on table, update scoreboard
-        var previousHit = 5
-        var playerScore = 0
-        var AiScore = 0
-        switch hit {
-        case 1,2:
-            if previousHit == 0 {
-                playerScore += 1
-            } else if previousHit == 5 {
-                AiScore += 1
-            } else if previousHit == 3 || previousHit == 4 {
-                AiScore += 1
-            }
-        case 3,4:
-            if previousHit == 0 {
-                AiScore += 1
-            } else if previousHit == 5 {
-                playerScore += 1
-            } else if previousHit == 1 || previousHit == 2 {
-                playerScore += 1
-            }
-        default:
-            let test = "test"
-
-        }
-        previousHit = hit
-    }
-    
-    func checkPreviousHit() -> Int {
-        let number = 10
-        return number
-    }
-    
-    func ai() {
-        //create opposing paddle which will return ball with some degree of randomness
-    }
+   // MARK: - Madoc's funcs WIP
+   
+   func serve(ball: SCNNode) {
+      //path up and down relative to table
+   }
+   
+   func hit() {
+      //send ball in direction it is hit
+   }
+   
+   func tableContact(hit: Int) {
+      
+      /*
+       0
+       [1][2]
+       ------
+       [3][4]
+       5
+       */
+      //register area of contact on table, update scoreboard
+      var previousHit = 5
+      var playerScore = 0
+      var AiScore = 0
+      switch hit {
+      case 1,2:
+         if previousHit == 0 {
+            playerScore += 1
+         } else if previousHit == 5 {
+            AiScore += 1
+         } else if previousHit == 3 || previousHit == 4 {
+            AiScore += 1
+         }
+      case 3,4:
+         if previousHit == 0 {
+            AiScore += 1
+         } else if previousHit == 5 {
+            playerScore += 1
+         } else if previousHit == 1 || previousHit == 2 {
+            playerScore += 1
+         }
+      default:
+         break
+         //let test = "test"break
+         
+      }
+      previousHit = hit
+   }
+   
+   func checkPreviousHit() -> Int {
+      let number = 10
+      return number
+   }
+   
+   func ai() {
+      //create opposing paddle which will return ball with some degree of randomness
+   }
    
    // MARK: - Helper Functions
    
@@ -245,24 +238,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       gameState.currentState = .ready
       
- 
-      
    }
    
    func addPaddleAndBall() {
       paddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
       paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
       paddle.position = SCNVector3(0.1, -0.15, -0.6)
-      
-      ball = SCNNode(geometry: SCNSphere(radius: 0.04))
-      ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.04), options: nil))
+      /*
+      ball = SCNNode(geometry: SCNSphere(radius: 0.02))
+      ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
       ball.physicsBody?.restitution = 0.9
       ball.geometry!.firstMaterial?.diffuse.contents = UIImage(named: "Resources.scnassets/Textures/sphereTex.png")
       ball.position = scnView.pointOfView!.convertPosition(SCNVector3(0.1, 0, -0.6), to: nil)
-      
+      */
       
       scnView.pointOfView!.addChildNode(paddle)
-      scnScene.rootNode.addChildNode(ball)
+      //scnScene.rootNode.addChildNode(ball)
    }
    
    func updateLightIntensity(_ estimate: ARLightEstimate) {
@@ -307,7 +298,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          statusLabel.text = "When you're ready, tap to serve the ball!"
          addPaddleAndBall()
       case .ready:
-         break
+         gameState.currentState = .playing
       default:
          throwBall()
       }
