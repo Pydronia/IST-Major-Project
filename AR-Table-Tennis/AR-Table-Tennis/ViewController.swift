@@ -12,6 +12,7 @@ import ARKit
 import QuartzCore
 
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
+   // TODO: Reset button and progression button
    
    // MARK: - Variables
    // MARK: Outlets
@@ -364,6 +365,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       // TODO: Remove fallen balls
       switch gameState.currentState {
       case .setup:
+         
+         // TODO: Remove table if not on a plane
          
          DispatchQueue.main.async {
             if let hit = self.scnView.hitTest(self.viewCenter, types: .existingPlaneUsingExtent).first {
