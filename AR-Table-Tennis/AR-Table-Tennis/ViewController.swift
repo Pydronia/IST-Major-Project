@@ -34,6 +34,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    var paddle: SCNNode!
    var ball: SCNNode!
    
+   let tableConstraint = SCNNode()
+   
    // MARK: Constants
    var viewCenter: CGPoint!
    
@@ -57,8 +59,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       
       //DEBUG
+      
       scnView.showsStatistics = true
-      scnView.debugOptions = ARSCNDebugOptions.showWorldOrigin
+      //scnView.debugOptions = .showPhysicsShapes
       
       
       gameState = GameState(initialState: .planeMapping)
@@ -86,9 +89,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       // TODO: Test and change this value for optimal performance (1/120 seems to be failsafe w/ 5cm thick planes and 1cm collision margin)
       scnView.scene.physicsWorld.timeStep = 1/120
       
-      viewCenter = CGPoint(x: scnView.bounds.width/2, y: scnView.bounds.height/2)
-      
       statusLabel.text = "Move your device around and map your environment: When you're satisfied with the surfaces, tap the screen to place the table"
+   }
+   
+   override func viewDidAppear(_ animated: Bool) {
+      super.viewDidAppear(animated)
+      viewCenter = CGPoint(x: scnView.bounds.width/2, y: scnView.bounds.height/2)
    }
    
    // MARK: - Main Methods
@@ -96,6 +102,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    // MARK: Plane Mapping
    
    func createPlaneNode(center: vector_float3, extent: vector_float3) -> SCNNode {
+      
+      // TODO: Make Planes always visible through table
+      
       let planeNode = SCNNode(geometry: SCNPlane(width: CGFloat(extent.x), height: CGFloat(extent.z)))
       
       let material = SCNMaterial()
@@ -144,7 +153,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       ballNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
       ballNode.physicsBody?.restitution = 0.9
       
-      // TODO: Convert to extension
       let direction = scnView.pointOfView!.forwardDirection
       
       ballNode.position = scnView.pointOfView!.position + direction * 0.1
@@ -153,12 +161,81 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       scnScene.rootNode.addChildNode(ballNode)
    }
-    
-   // MARK: - Madoc's funcs WIP
    
-   func serve(ball: SCNNode) {
-      //path up and down relative to table
+   // MARK: Object adding
+   
+   func addTable(_ transform: SCNMatrix4) {
+      
+      let path = Bundle.main.path(forResource: "Table", ofType: "scn", inDirectory: "Resources.scnassets/Models")
+      let referenceURL = URL(fileURLWithPath: path!)
+      
+      table = SCNReferenceNode(url: referenceURL)!
+      table.load()
+      // TODO: Make function to get world position easily
+      table.transform = transform
+      
+      scnScene.rootNode.addChildNode(table)
+      
+      gameState.currentState = .ready
+      
    }
+   
+   func anchorTable(){
+      
+      for plane in planeNodes {
+         // Make planes invisible but cull other objects (e.g. you won't see a ball under a mapped table)
+         let material = plane.geometry!.firstMaterial!
+         material.diffuse.contents = nil
+         material.lightingModel = .constant
+         material.writesToDepthBuffer = true
+         material.colorBufferWriteMask = []
+         plane.renderingOrder = -1
+      }
+      
+      table.constraints = []
+      
+      let tableModel = table.childNode(withName: "table", recursively: false)!
+      tableModel.physicsBody?.type = .static
+      let netModel = table.childNode(withName: "net", recursively: false)!
+      netModel.physicsBody?.type = .static
+      
+      
+      table.opacity = 1
+      
+      gameState.currentState = .ready
+      statusLabel.text = "When you're ready, tap to serve the ball!"
+      addPaddleAndBall()
+      
+   }
+   
+   func addPaddleAndBall() {
+      paddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
+      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
+      paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
+      paddle.position = SCNVector3(0.1, -0.15, -0.6)
+      
+      ball = SCNNode(geometry: SCNSphere(radius: 0.02))
+      ball.geometry!.firstMaterial?.diffuse.contents = UIImage(named: "Resources.scnassets/Textures/sphereTex.png")
+      ball.position = SCNVector3(0.1, 0, -0.6)
+      
+      
+      scnView.pointOfView!.addChildNode(paddle)
+      scnView.pointOfView!.addChildNode(ball)
+   }
+   
+   // MARK: Serving
+   // TODO: serveBallForPlayer
+   func serveBall() {
+      ball.removeFromParentNode()
+      scnScene.rootNode.addChildNode(ball)
+      ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
+      ball.physicsBody?.restitution = 0.9
+      ball.position = scnView.pointOfView!.convertPosition(ball.position, to: nil)
+      ball.physicsBody?.applyForce(scnView.pointOfView!.forwardDirection * 5, asImpulse: true)
+      
+   }
+ 
+   // MARK: - Madoc's funcs WIP
    
    func hit() {
       //send ball in direction it is hit
@@ -211,6 +288,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       //create opposing paddle which will return ball with some degree of randomness
    }
    
+   
+   
    // MARK: - Helper Functions
    
    func showMessage(_ message: String?){
@@ -222,38 +301,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          errorLabel.text = message!
       }
       
-   }
-   
-   
-   func addTable(_ transform: SCNMatrix4) {
-      
-      let path = Bundle.main.path(forResource: "Table", ofType: "scn", inDirectory: "Resources.scnassets/Models")
-      let referenceURL = URL(fileURLWithPath: path!)
-      
-      table = SCNReferenceNode(url: referenceURL)!
-      table.load()
-      // TODO: Make function to get world position easily
-      table.transform = transform
-      scnScene.rootNode.addChildNode(table)
-      
-      gameState.currentState = .ready
-      
-   }
-   
-   func addPaddleAndBall() {
-      paddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
-      paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
-      paddle.position = SCNVector3(0.1, -0.15, -0.6)
-      /*
-      ball = SCNNode(geometry: SCNSphere(radius: 0.02))
-      ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
-      ball.physicsBody?.restitution = 0.9
-      ball.geometry!.firstMaterial?.diffuse.contents = UIImage(named: "Resources.scnassets/Textures/sphereTex.png")
-      ball.position = scnView.pointOfView!.convertPosition(SCNVector3(0.1, 0, -0.6), to: nil)
-      */
-      
-      scnView.pointOfView!.addChildNode(paddle)
-      //scnScene.rootNode.addChildNode(ball)
    }
    
    func updateLightIntensity(_ estimate: ARLightEstimate) {
@@ -268,7 +315,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       switch gameState.currentState {
       case .planeMapping:
-         // Mapping planes
+         // Finished plane mapping
+         // Place table to start with
          if let hit = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
             addTable(SCNMatrix4(hit.worldTransform))
             gameState.currentState = .setup
@@ -277,27 +325,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             gameState.currentState = .setup
          }
          
-         for plane in planeNodes {
-            // Make planes invisible but cull other objects (e.g. you won't see a ball under a mapped table)
-            let material = plane.geometry!.firstMaterial!
-            material.diffuse.contents = nil
-            material.lightingModel = .constant
-            material.writesToDepthBuffer = true
-            material.colorBufferWriteMask = []
-            plane.renderingOrder = -1
-         }
-         
          
          statusLabel.text = "Tap to lock the table in place"
+         scnScene.rootNode.addChildNode(tableConstraint)
+         let constraint = SCNLookAtConstraint(target: self.tableConstraint)
+         constraint.isGimbalLockEnabled = true
+         constraint.localFront = SCNVector3(0,0,1)
+         table.constraints = [constraint]
+         
+         table.opacity = 0.5
          
          let newConfig = ARWorldTrackingConfiguration()
          newConfig.isLightEstimationEnabled = true
          scnView.session.run(newConfig)
       case .setup:
-         gameState.currentState = .ready
-         statusLabel.text = "When you're ready, tap to serve the ball!"
-         addPaddleAndBall()
+         
+         if let _ = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
+            anchorTable()
+         } else if let _ = scnView.hitTest(viewCenter, types: .featurePoint).last {
+            anchorTable()
+         }
+
+         
       case .ready:
+         serveBall()
          gameState.currentState = .playing
       default:
          throwBall()
@@ -313,6 +364,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       // TODO: Remove fallen balls
       switch gameState.currentState {
       case .setup:
+         
+         DispatchQueue.main.async {
+            if let hit = self.scnView.hitTest(self.viewCenter, types: .existingPlaneUsingExtent).first {
+               self.table.transform = SCNMatrix4(hit.worldTransform)
+               self.tableConstraint.position = SCNVector3(self.scnView.pointOfView!.position.x, self.table.position.y, self.scnView.pointOfView!.position.z)
+               
+            }
+         }
+         
          break
       default:
          break
