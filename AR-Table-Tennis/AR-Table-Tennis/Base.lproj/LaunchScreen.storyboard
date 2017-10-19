@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A277" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina4_7" orientation="landscape">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,15 +15,42 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradient" translatesAutoresizingMaskIntoConstraints="NO" id="nt0-K5-kIc">
+                                <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="Qpv-Da-sC7">
+                                <rect key="frame" x="146" y="0.0" width="375" height="375"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Qpv-Da-sC7" secondAttribute="height" multiplier="1:1" id="e5k-8E-Cca"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="width" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="width" id="8j6-tA-dIx"/>
+                            <constraint firstItem="nt0-K5-kIc" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="GRu-fS-LA5"/>
+                            <constraint firstAttribute="trailing" secondItem="nt0-K5-kIc" secondAttribute="trailing" id="JiD-34-nnX"/>
+                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="KOv-O6-pIQ"/>
+                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" priority="750" id="STW-XF-qOb"/>
+                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="height" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="height" id="fx4-Am-CVr"/>
+                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" priority="750" id="gq9-H0-ffa"/>
+                            <constraint firstItem="nt0-K5-kIc" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="mub-Bu-pyc"/>
+                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="omi-JP-fmb"/>
+                            <constraint firstAttribute="bottom" secondItem="nt0-K5-kIc" secondAttribute="bottom" id="s5e-qV-Sry"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="53" y="375"/>
+            <point key="canvasLocation" x="51.724137931034484" y="373.60000000000002"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Splash" width="3072" height="3072"/>
+        <image name="gradient" width="3072" height="3072"/>
+    </resources>
 </document>

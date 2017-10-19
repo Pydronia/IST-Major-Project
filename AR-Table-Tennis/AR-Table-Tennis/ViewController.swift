@@ -12,7 +12,6 @@ import ARKit
 import QuartzCore
 
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
-   // TODO: Reset button and progression button
    
    // MARK: - Variables
    // MARK: Outlets
@@ -20,6 +19,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    @IBOutlet weak var statusLabel: UILabel!
    @IBOutlet weak var errorLabel: UILabel!
    @IBOutlet weak var crosshair: UIImageView!
+   @IBOutlet weak var progressButton: UIButton!
+   @IBOutlet weak var resetButton: UIButton!
    
    // MARK: Globals
    var scnScene: SCNScene!
@@ -33,9 +34,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    var table: SCNReferenceNode!
    var paddle: SCNNode!
+   var aiPaddle: SCNNode!
    var ball: SCNNode!
    
+   var aiController: AIController!
+   
    let tableConstraint = SCNNode()
+   
+   var shouldUpdateErrors: Bool = true
    
    // MARK: Constants
    var viewCenter: CGPoint!
@@ -58,22 +64,48 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       ambLight.light?.intensity = 1000
       scnScene.rootNode.addChildNode(ambLight)
       
+      scnView.preferredFramesPerSecond = UIScreen.main.maximumFramesPerSecond
       
       //DEBUG
       
       scnView.showsStatistics = true
-      //scnView.debugOptions = .showPhysicsShapes
+      //scnView.debugOptions = [.showBoundingBoxes, .showPhysicsShapes]
       
       
       gameState = GameState(initialState: .planeMapping)
       statusLabel.layer.cornerRadius = 10
       errorLabel.layer.cornerRadius = 10
+      progressButton.layer.cornerRadius = 10
       
+   }
+   
+   func startSession(reset: Bool){
+      let config = ARWorldTrackingConfiguration()
+      config.planeDetection = .horizontal
+      config.isLightEstimationEnabled = true
+      // TODO: This doesn't work, so currently manually updating ambient light.
+      scnView.automaticallyUpdatesLighting = true
+      
+      if reset {
+         scnView.session.run(config, options: [.resetTracking, .removeExistingAnchors])
+      } else {
+         scnView.session.run(config)
+      }
+      
+      
+      // TODO: Test and change this value for optimal performance (1/120 seems to be failsafe w/ 5cm thick planes and 1cm collision margin)
+      scnView.scene.physicsWorld.timeStep = 1/120
+      
+      statusLabel.text = "Move your device around and map your environment: When you're satisfied with the surfaces, tap the screen to place the table"
    }
    
    // Load the scene and do some setup
    override func viewDidLoad() {
       super.viewDidLoad()
+      
+      let tapper = UITapGestureRecognizer(target: self, action: #selector(self.errorLabelTapped))
+      errorLabel.addGestureRecognizer(tapper)
+      
       setupView()
    }
    
@@ -81,16 +113,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    override func viewWillAppear(_ animated: Bool) {
       super.viewWillAppear(animated)
       
-      let config = ARWorldTrackingConfiguration()
-      config.planeDetection = .horizontal
-      config.isLightEstimationEnabled = true
-      // TODO: This doesn't work, so currently manually updating ambient light.
-      scnView.automaticallyUpdatesLighting = true
-      scnView.session.run(config)
-      // TODO: Test and change this value for optimal performance (1/120 seems to be failsafe w/ 5cm thick planes and 1cm collision margin)
-      scnView.scene.physicsWorld.timeStep = 1/120
-      
-      statusLabel.text = "Move your device around and map your environment: When you're satisfied with the surfaces, tap the screen to place the table"
+      startSession(reset: false)
    }
    
    override func viewDidAppear(_ animated: Bool) {
@@ -98,13 +121,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       viewCenter = CGPoint(x: scnView.bounds.width/2, y: scnView.bounds.height/2)
    }
    
+   override var prefersStatusBarHidden: Bool {
+      get {
+         return true
+      }
+   }
+   
    // MARK: - Main Methods
    
    // MARK: Plane Mapping
    
    func createPlaneNode(center: vector_float3, extent: vector_float3) -> SCNNode {
-      
-      // TODO: Make Planes always visible through table
       
       let planeNode = SCNNode(geometry: SCNPlane(width: CGFloat(extent.x), height: CGFloat(extent.z)))
       
@@ -172,7 +199,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       table = SCNReferenceNode(url: referenceURL)!
       table.load()
-      // TODO: Make function to get world position easily
       table.transform = transform
       
       scnScene.rootNode.addChildNode(table)
@@ -194,6 +220,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       }
       
       table.constraints = []
+      tableConstraint.removeFromParentNode()
       
       let tableModel = table.childNode(withName: "table", recursively: false)!
       tableModel.physicsBody?.type = .static
@@ -206,33 +233,49 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       gameState.currentState = .ready
       statusLabel.text = "When you're ready, tap to serve the ball!"
       addPaddleAndBall()
+      addAI()
       
    }
    
    func addPaddleAndBall() {
       paddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
-      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
+      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
       paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
       paddle.position = SCNVector3(0.1, -0.15, -0.6)
       
       ball = SCNNode(geometry: SCNSphere(radius: 0.02))
       ball.geometry!.firstMaterial?.diffuse.contents = UIImage(named: "Resources.scnassets/Textures/sphereTex.png")
       ball.position = SCNVector3(0.1, 0, -0.6)
+      ball.movabilityHint = .movable
+      ball.geometry!.firstMaterial?.lightingModel = .physicallyBased
       
       
       scnView.pointOfView!.addChildNode(paddle)
       scnView.pointOfView!.addChildNode(ball)
    }
    
+   func addAI() {
+      aiPaddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
+      aiPaddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
+      aiPaddle.geometry!.firstMaterial?.diffuse.contents = UIColor.green
+      aiPaddle.position = SCNVector3(0, 0.3, -1.75)
+      table.addChildNode(aiPaddle)
+      
+      aiController = AIController(paddle: aiPaddle, difficulty: .hard)
+      
+   }
+   
    // MARK: Serving
    // TODO: serveBallForPlayer
    func serveBall() {
       ball.removeFromParentNode()
-      scnScene.rootNode.addChildNode(ball)
+      table.addChildNode(ball)
       ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
       ball.physicsBody?.restitution = 0.9
-      ball.position = scnView.pointOfView!.convertPosition(ball.position, to: nil)
-      ball.physicsBody?.applyForce(scnView.pointOfView!.forwardDirection * 5, asImpulse: true)
+      ball.position = scnView.pointOfView!.convertPosition(ball.position, to: table)
+      ball.physicsBody?.applyForce(scnView.pointOfView!.forwardDirection * 7, asImpulse: true)
+      
+      gameState.currentState = .playing
       
    }
  
@@ -293,6 +336,45 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    // MARK: - Helper Functions
    
+   func resetSession(){
+      scnView.session.pause()
+      
+      planeNodes = []
+      
+      if table != nil {
+         table.removeFromParentNode()
+      }
+      
+      if paddle != nil {
+         paddle.removeFromParentNode()
+      }
+      
+      if ball != nil {
+         ball.removeFromParentNode()
+      }
+      
+      table = nil
+      paddle = nil
+      ball = nil
+      
+      scoreboard = []
+      
+      progressButton.isHidden = false
+      
+      setupView()
+      startSession(reset: true)
+   }
+   
+   func resetBall() {
+      gameState.currentState = .ready
+      ball.removeFromParentNode()
+      scnView.pointOfView!.addChildNode(ball)
+      ball.physicsBody = nil
+      ball.position = SCNVector3(0.1, 0, -0.6)
+      aiController.returnToStart()
+      
+   }
+   
    func showMessage(_ message: String?){
       
       if message == nil {
@@ -311,8 +393,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    
    // MARK: - Touches
+
+   @IBAction func resetButtonTouched(_ sender: UIButton) {
+      
+      
+      if gameState.currentState == .playing {
+         resetBall()
+      } else {
+         shouldUpdateErrors = true
+         resetSession()
+      }
+      
+      
+   }
    
-   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+   
+   @IBAction func nextButtonTouched(_ sender: UIButton) {
       
       switch gameState.currentState {
       case .planeMapping:
@@ -346,13 +442,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          } else if let _ = scnView.hitTest(viewCenter, types: .featurePoint).last {
             anchorTable()
          }
-
          
+         sender.isHidden = true
+      default:
+         break
+      }
+      
+   }
+   
+   @objc func errorLabelTapped(sender: UITapGestureRecognizer) {
+      shouldUpdateErrors = false
+      errorLabel.isHidden = true
+   }
+   
+   
+   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+      switch gameState.currentState {
       case .ready:
+         if gameState.playerScore == 0 && gameState.aiScore == 0 {
+            statusLabel.isHidden = true
+         }
          serveBall()
          gameState.currentState = .playing
       default:
-         throwBall()
+         break
       }
    }
    
@@ -362,21 +475,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    // MARK: - ARSCNViewDelegate
    
    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-      // TODO: Remove fallen balls
       switch gameState.currentState {
       case .setup:
          
-         // TODO: Remove table if not on a plane
          
          DispatchQueue.main.async {
             if let hit = self.scnView.hitTest(self.viewCenter, types: .existingPlaneUsingExtent).first {
+               self.table.isHidden = false
                self.table.transform = SCNMatrix4(hit.worldTransform)
                self.tableConstraint.position = SCNVector3(self.scnView.pointOfView!.position.x, self.table.position.y, self.scnView.pointOfView!.position.z)
                
+            } else {
+               self.table.isHidden = true
             }
          }
          
          break
+      case .playing:
+         DispatchQueue.main.async {
+            self.aiController.moveTo(x: self.ball.presentation.position.x, y: self.ball.presentation.position.y)
+            
+         }
       default:
          break
       }
@@ -390,9 +509,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          }
       }
       
+      
       DispatchQueue.main.async {
-         self.updateTrackingErrors(for: frame)
+         if self.shouldUpdateErrors {
+            self.updateTrackingErrors(for: frame)
+         }
       }
+      
+      
+      
    }
    
    // MARK: Plane Mapping
@@ -501,5 +626,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       super.didReceiveMemoryWarning()
       // Release any cached data, images, etc that aren't in use.
    }
+   
 }
 
