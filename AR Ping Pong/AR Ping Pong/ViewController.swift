@@ -238,9 +238,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    }
    
    func addPaddleAndBall() {
-      paddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
+      paddle = SCNNode(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025))
       paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
-      paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
+      paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.green
       paddle.position = SCNVector3(0.1, -0.15, -0.6)
       
       ball = SCNNode(geometry: SCNSphere(radius: 0.02))
@@ -255,9 +255,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    }
    
    func addAI() {
-      aiPaddle = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025))
+      aiPaddle = SCNNode(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025))
       aiPaddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
-      aiPaddle.geometry!.firstMaterial?.diffuse.contents = UIColor.green
+      aiPaddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
       aiPaddle.position = SCNVector3(0, 0.3, -1.75)
       table.addChildNode(aiPaddle)
       

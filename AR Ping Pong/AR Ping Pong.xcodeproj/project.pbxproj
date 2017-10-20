@@ -21,7 +21,7 @@
 /* Begin PBXFileReference section */
 		04098BDB1F78AA220014C2B4 /* MathHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathHelper.swift; sourceTree = "<group>"; };
 		04307CCB1F989C9300CC2316 /* AIController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIController.swift; sourceTree = "<group>"; };
-		044DFDF11F5CC0B600E0760B /* AR-Table-Tennis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-Table-Tennis.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		044DFDF11F5CC0B600E0760B /* AR Ping Pong.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR Ping Pong.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		044DFDF41F5CC0B600E0760B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		044DFDF81F5CC0B600E0760B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		044DFDFB1F5CC0B600E0760B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
 		044DFDE81F5CC0B600E0760B = {
 			isa = PBXGroup;
 			children = (
-				044DFDF31F5CC0B600E0760B /* AR-Table-Tennis */,
+				044DFDF31F5CC0B600E0760B /* AR Ping Pong */,
 				044DFDF21F5CC0B600E0760B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,12 +54,12 @@
 		044DFDF21F5CC0B600E0760B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				044DFDF11F5CC0B600E0760B /* AR-Table-Tennis.app */,
+				044DFDF11F5CC0B600E0760B /* AR Ping Pong.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		044DFDF31F5CC0B600E0760B /* AR-Table-Tennis */ = {
+		044DFDF31F5CC0B600E0760B /* AR Ping Pong */ = {
 			isa = PBXGroup;
 			children = (
 				04098BDB1F78AA220014C2B4 /* MathHelper.swift */,
@@ -73,15 +73,15 @@
 				04DF1BD51F84D9A8005F6AD2 /* Assets.xcassets */,
 				048929B61F873AB100A947F2 /* Resources.scnassets */,
 			);
-			path = "AR-Table-Tennis";
+			path = "AR Ping Pong";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		044DFDF01F5CC0B600E0760B /* AR-Table-Tennis */ = {
+		044DFDF01F5CC0B600E0760B /* AR Ping Pong */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 044DFE051F5CC0B600E0760B /* Build configuration list for PBXNativeTarget "AR-Table-Tennis" */;
+			buildConfigurationList = 044DFE051F5CC0B600E0760B /* Build configuration list for PBXNativeTarget "AR Ping Pong" */;
 			buildPhases = (
 				044DFDED1F5CC0B600E0760B /* Sources */,
 				044DFDEE1F5CC0B600E0760B /* Frameworks */,
@@ -91,9 +91,9 @@
 			);
 			dependencies = (
 			);
-			name = "AR-Table-Tennis";
+			name = "AR Ping Pong";
 			productName = "AR-Table-Tennis";
-			productReference = 044DFDF11F5CC0B600E0760B /* AR-Table-Tennis.app */;
+			productReference = 044DFDF11F5CC0B600E0760B /* AR Ping Pong.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -112,7 +112,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 044DFDEC1F5CC0B600E0760B /* Build configuration list for PBXProject "AR-Table-Tennis" */;
+			buildConfigurationList = 044DFDEC1F5CC0B600E0760B /* Build configuration list for PBXProject "AR Ping Pong" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -125,7 +125,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				044DFDF01F5CC0B600E0760B /* AR-Table-Tennis */,
+				044DFDF01F5CC0B600E0760B /* AR Ping Pong */,
 			);
 		};
 /* End PBXProject section */
@@ -292,9 +292,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6YBDHZ9WG7;
-				INFOPLIST_FILE = "AR-Table-Tennis/Info.plist";
+				INFOPLIST_FILE = "AR Ping Pong/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jackCarey.AR-Table-Tennis";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jackCarey.AR-Ping-Pong";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -307,9 +307,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6YBDHZ9WG7;
-				INFOPLIST_FILE = "AR-Table-Tennis/Info.plist";
+				INFOPLIST_FILE = "AR Ping Pong/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jackCarey.AR-Table-Tennis";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jackCarey.AR-Ping-Pong";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -319,7 +319,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		044DFDEC1F5CC0B600E0760B /* Build configuration list for PBXProject "AR-Table-Tennis" */ = {
+		044DFDEC1F5CC0B600E0760B /* Build configuration list for PBXProject "AR Ping Pong" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				044DFE031F5CC0B600E0760B /* Debug */,
@@ -328,7 +328,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		044DFE051F5CC0B600E0760B /* Build configuration list for PBXNativeTarget "AR-Table-Tennis" */ = {
+		044DFE051F5CC0B600E0760B /* Build configuration list for PBXNativeTarget "AR Ping Pong" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				044DFE061F5CC0B600E0760B /* Debug */,

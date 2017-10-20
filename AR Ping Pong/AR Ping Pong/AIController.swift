@@ -18,24 +18,31 @@ public enum Difficulty {
 public class AIController {
    
    var paddleNode: SCNNode
-   var moveSpeed: Double
+   var moveSpeed: Float
    var startPos: SCNVector3
    
    init(paddle: SCNNode, difficulty: Difficulty) {
       paddleNode = paddle
       switch difficulty {
       case .easy:
-         moveSpeed = 0.0001
+         moveSpeed = 0.005
       case .medium:
-         moveSpeed = 0.0005
+         moveSpeed = 0.01
       case .hard:
-         moveSpeed = 0.001
+         moveSpeed = 0.05
       }
+      
       startPos = paddle.position
    }
    
    func moveTo(x: Float, y: Float) {
-      paddleNode.position = SCNVector3(x, y, paddleNode.position.z)
+      // TODO: Test
+      
+      let destination = SCNVector3(x, y, 0)
+      let vector = destination - paddleNode.position
+      let vectorLength = sqrt(vector.x * vector.x + vector.y * vector.y)
+      let normalisedVector = SCNVector3(vector.x/vectorLength, vector.y/vectorLength, 0)
+      paddleNode.position = paddleNode.position + (normalisedVector * (vectorLength/10.0))
    }
    
    func returnToStart(){
