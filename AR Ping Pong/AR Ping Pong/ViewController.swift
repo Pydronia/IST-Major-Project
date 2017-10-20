@@ -21,8 +21,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    @IBOutlet weak var crosshair: UIImageView!
    @IBOutlet weak var progressButton: UIButton!
    @IBOutlet weak var resetButton: UIButton!
-   
-   // MARK: Globals
+    @IBOutlet weak var scoreLabel: UILabel!
+    
+    @IBAction func hardButton(_ sender: Any) {
+    }
+    
+    @IBAction func mediumButton(_ sender: Any) {
+    }
+    
+    @IBAction func easyButton(_ sender: Any) {
+    }
+    
+    
+    
+    // MARK: Globals
    var scnScene: SCNScene!
    var gameState: GameState!
    
@@ -76,6 +88,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       statusLabel.layer.cornerRadius = 10
       errorLabel.layer.cornerRadius = 10
       progressButton.layer.cornerRadius = 10
+        scoreLabel.layer.cornerRadius = 10
       
    }
    
