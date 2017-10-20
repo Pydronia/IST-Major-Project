@@ -40,6 +40,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    var aiController: AIController!
    
    let tableConstraint = SCNNode()
+   let paddleConstraint = SCNNode()
    
    var shouldUpdateErrors: Bool = true
    
@@ -259,7 +260,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       aiPaddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
       aiPaddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
       aiPaddle.position = SCNVector3(0, 0.3, -1.75)
+      
+      paddleConstraint.position = SCNVector3(0,0.4,0)
+      
+      let constraint = SCNLookAtConstraint(target: paddleConstraint)
+      constraint.isGimbalLockEnabled = true
+      constraint.localFront = SCNVector3(0,0,1)
+      aiPaddle.constraints = [constraint]
+      
       table.addChildNode(aiPaddle)
+      table.addChildNode(paddleConstraint)
       
       aiController = AIController(paddle: aiPaddle, difficulty: .hard)
       
