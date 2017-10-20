@@ -21,16 +21,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    @IBOutlet weak var crosshair: UIImageView!
    @IBOutlet weak var progressButton: UIButton!
    @IBOutlet weak var resetButton: UIButton!
-    @IBOutlet weak var scoreLabel: UILabel!
+   @IBOutlet weak var scoreLabel: UILabel!
     
-    @IBAction func hardButton(_ sender: Any) {
-    }
-    
-    @IBAction func mediumButton(_ sender: Any) {
-    }
-    
-    @IBAction func easyButton(_ sender: Any) {
-    }
+   @IBAction func hardButton(_ sender: Any) {
+   }
+
+   @IBAction func mediumButton(_ sender: Any) {
+   }
+
+   @IBAction func easyButton(_ sender: Any) {
+   }
     
     
     
