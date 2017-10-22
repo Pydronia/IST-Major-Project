@@ -52,6 +52,7 @@ public class AIController {
       let vectorLength = sqrt(vector.x * vector.x + vector.y * vector.y)
       let normalisedVector = SCNVector3(vector.x/vectorLength, vector.y/vectorLength, 0)
       var speed = vectorLength/moveSpeed
+      
       if vectorLength > 1.5 {
          speed = 2/moveSpeed
       } else if vectorLength < lowerLimit {

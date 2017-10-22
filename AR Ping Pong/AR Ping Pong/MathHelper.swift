@@ -28,9 +28,12 @@ extension SCNVector3 {
    static func * (left: SCNVector3, right: Float) -> SCNVector3 {
       return SCNVector3(left.x * right, left.y * right, left.z * right)
    }
-   
-   
-   
+}
+
+extension SCNMatrix4 {
+   var worldPosition: SCNVector3 {
+      return SCNVector3(self.m41, self.m42, self.m43)
+   }
 }
 
 extension SCNNode {

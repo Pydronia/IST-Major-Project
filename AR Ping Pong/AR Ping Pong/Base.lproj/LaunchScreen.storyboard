@@ -6,42 +6,99 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Futura.ttc">
+            <string>Futura-Medium</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                    <view key="view" contentMode="scaleToFill" id="5R8-Jc-Svl">
                         <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradient" translatesAutoresizingMaskIntoConstraints="NO" id="nt0-K5-kIc">
-                                <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
-                            </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="Qpv-Da-sC7">
-                                <rect key="frame" x="146" y="0.0" width="375" height="375"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="wiC-Wi-uAe">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="375"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="Qpv-Da-sC7" secondAttribute="height" multiplier="1:1" id="e5k-8E-Cca"/>
+                                    <constraint firstAttribute="width" secondItem="wiC-Wi-uAe" secondAttribute="height" multiplier="1:1" id="5Xb-t7-N4m"/>
                                 </constraints>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bfb-4f-jQD">
+                                <rect key="frame" x="375" y="0.0" width="292" height="375"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to AR Ping Pong! To get started, select a difficulty below!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="eUq-Io-CLf">
+                                        <rect key="frame" x="22" y="20" width="248" height="60"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.74917059080000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="NiC-1Y-8kO"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="15"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fOC-Ps-mIG">
+                                        <rect key="frame" x="96.5" y="128" width="100" height="40"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.74917059080000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="y8D-t2-4NA"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="22"/>
+                                        <state key="normal" title="Easy"/>
+                                    </button>
+                                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nco-tP-wDB">
+                                        <rect key="frame" x="96.5" y="208" width="100" height="40"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.74917059080000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="ggv-GD-wML"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="22"/>
+                                        <state key="normal" title="Medium"/>
+                                    </button>
+                                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ag4-OM-C6s">
+                                        <rect key="frame" x="96.5" y="288" width="100" height="40"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.74917059080000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="lRs-0P-0Dg"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="22"/>
+                                        <state key="normal" title="Hard"/>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Ag4-OM-C6s" firstAttribute="centerX" secondItem="bfb-4f-jQD" secondAttribute="centerX" id="6rG-da-328"/>
+                                    <constraint firstItem="nco-tP-wDB" firstAttribute="centerY" secondItem="bfb-4f-jQD" secondAttribute="centerY" constant="40" id="GzG-fL-EaY"/>
+                                    <constraint firstItem="Ag4-OM-C6s" firstAttribute="centerY" secondItem="bfb-4f-jQD" secondAttribute="centerY" constant="120" id="IZh-77-ryO"/>
+                                    <constraint firstItem="nco-tP-wDB" firstAttribute="centerX" secondItem="bfb-4f-jQD" secondAttribute="centerX" id="Pqe-wV-9m5"/>
+                                    <constraint firstItem="fOC-Ps-mIG" firstAttribute="centerY" secondItem="bfb-4f-jQD" secondAttribute="centerY" constant="-40" id="ZSU-Sh-jvg"/>
+                                    <constraint firstItem="eUq-Io-CLf" firstAttribute="width" secondItem="bfb-4f-jQD" secondAttribute="width" multiplier="0.85" id="cix-yf-HcL"/>
+                                    <constraint firstItem="eUq-Io-CLf" firstAttribute="top" secondItem="bfb-4f-jQD" secondAttribute="top" constant="20" id="hL3-B1-9WM"/>
+                                    <constraint firstItem="eUq-Io-CLf" firstAttribute="centerX" secondItem="bfb-4f-jQD" secondAttribute="centerX" id="pU1-zQ-gQ6"/>
+                                    <constraint firstItem="fOC-Ps-mIG" firstAttribute="centerX" secondItem="bfb-4f-jQD" secondAttribute="centerX" id="sZN-Bg-ElY"/>
+                                </constraints>
+                            </view>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="width" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="width" id="8j6-tA-dIx"/>
-                            <constraint firstItem="nt0-K5-kIc" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="GRu-fS-LA5"/>
-                            <constraint firstAttribute="trailing" secondItem="nt0-K5-kIc" secondAttribute="trailing" id="JiD-34-nnX"/>
-                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="KOv-O6-pIQ"/>
-                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" priority="750" id="STW-XF-qOb"/>
-                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="height" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="height" id="fx4-Am-CVr"/>
-                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" priority="750" id="gq9-H0-ffa"/>
-                            <constraint firstItem="nt0-K5-kIc" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="mub-Bu-pyc"/>
-                            <constraint firstItem="Qpv-Da-sC7" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="omi-JP-fmb"/>
-                            <constraint firstAttribute="bottom" secondItem="nt0-K5-kIc" secondAttribute="bottom" id="s5e-qV-Sry"/>
+                            <constraint firstItem="wiC-Wi-uAe" firstAttribute="height" relation="lessThanOrEqual" secondItem="5R8-Jc-Svl" secondAttribute="height" id="7yM-SH-GFU"/>
+                            <constraint firstItem="wiC-Wi-uAe" firstAttribute="width" secondItem="5R8-Jc-Svl" secondAttribute="width" multiplier="0.6" priority="750" id="DCR-nN-x55"/>
+                            <constraint firstItem="bfb-4f-jQD" firstAttribute="leading" secondItem="wiC-Wi-uAe" secondAttribute="trailing" id="Eie-gj-KYt"/>
+                            <constraint firstItem="fOC-Ps-mIG" firstAttribute="width" secondItem="5R8-Jc-Svl" secondAttribute="width" multiplier="0.15" id="M5R-dr-BBb"/>
+                            <constraint firstItem="bfb-4f-jQD" firstAttribute="top" secondItem="5R8-Jc-Svl" secondAttribute="top" id="fsR-hL-1gd"/>
+                            <constraint firstAttribute="bottom" secondItem="bfb-4f-jQD" secondAttribute="bottom" id="lif-yn-wyo"/>
+                            <constraint firstItem="o7O-B2-6ro" firstAttribute="trailing" secondItem="bfb-4f-jQD" secondAttribute="trailing" id="m0B-kd-zjw"/>
+                            <constraint firstItem="Ag4-OM-C6s" firstAttribute="width" secondItem="5R8-Jc-Svl" secondAttribute="width" multiplier="0.15" id="oMS-bg-zIq"/>
+                            <constraint firstItem="wiC-Wi-uAe" firstAttribute="leading" secondItem="5R8-Jc-Svl" secondAttribute="leading" id="p5H-gV-DDh"/>
+                            <constraint firstItem="nco-tP-wDB" firstAttribute="width" secondItem="5R8-Jc-Svl" secondAttribute="width" multiplier="0.15" id="vOk-eT-Xa4"/>
+                            <constraint firstItem="wiC-Wi-uAe" firstAttribute="centerY" secondItem="5R8-Jc-Svl" secondAttribute="centerY" id="wBI-2Z-L90"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <viewLayoutGuide key="safeArea" id="o7O-B2-6ro"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -51,6 +108,5 @@
     </scenes>
     <resources>
         <image name="Splash" width="3072" height="3072"/>
-        <image name="gradient" width="3072" height="3072"/>
     </resources>
 </document>

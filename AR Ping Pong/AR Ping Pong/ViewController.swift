@@ -23,15 +23,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    @IBOutlet weak var resetButton: UIButton!
    @IBOutlet weak var scoreLabel: UILabel!
     
-   @IBAction func hardButton(_ sender: Any) {
-   }
-
-   @IBAction func mediumButton(_ sender: Any) {
-   }
-
-   @IBAction func easyButton(_ sender: Any) {
-   }
-    
     
     
     // MARK: Globals
@@ -44,7 +35,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
    var scoreboard: [Int] = []
    
-   var table: SCNReferenceNode!
+   public var gameDifficulty: Difficulty = .hard
+   
+   var table: SCNNode!
    var paddle: SCNNode!
    var aiPaddle: SCNNode!
    var ball: SCNNode!
@@ -55,6 +48,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    let paddleConstraint = SCNNode()
    
    var shouldUpdateErrors: Bool = true
+   var tableIsHalved: Bool? = nil
    
    // MARK: Constants
    var viewCenter: CGPoint!
@@ -81,15 +75,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       //DEBUG
       
-      scnView.showsStatistics = true
-      //scnView.debugOptions = [.showBoundingBoxes, .showPhysicsShapes]
+      //scnView.showsStatistics = true
+      //scnView.debugOptions = .showPhysicsShapes
       
       
       gameState = GameState(initialState: .planeMapping)
       statusLabel.layer.cornerRadius = 10
       errorLabel.layer.cornerRadius = 10
       progressButton.layer.cornerRadius = 10
-        scoreLabel.layer.cornerRadius = 10
+      scoreLabel.layer.cornerRadius = 10
       
    }
    
@@ -110,7 +104,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       // TODO: Test and change this value for optimal performance (1/120 seems to be failsafe w/ 5cm thick planes and 1cm collision margin)
       scnView.scene.physicsWorld.timeStep = 1/120
       
-      statusLabel.text = "Move your device around and map your environment: When you're satisfied with the surfaces, tap the screen to place the table"
+      statusLabel.text = "Move your device around and map your environment. When you're ready, look at a surface and tap the arrow!"
    }
    
    // Load the scene and do some setup
@@ -206,14 +200,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    // MARK: Object adding
    
-   func addTable(_ transform: SCNMatrix4) {
+   func addTable(_ transform: matrix_float4x4) {
       
-      let path = Bundle.main.path(forResource: "Table", ofType: "scn", inDirectory: "Resources.scnassets/Models")
-      let referenceURL = URL(fileURLWithPath: path!)
+      table = SCNNode()
       
-      table = SCNReferenceNode(url: referenceURL)!
-      table.load()
-      table.transform = transform
+      let tableScene = SCNScene(named: "Resources.scnassets/Models/Table.scn")!
+      for child in tableScene.rootNode.childNodes {
+         table.addChildNode(child)
+      }
+      
+      table.position = SCNMatrix4(transform).worldPosition
       
       scnScene.rootNode.addChildNode(table)
       
@@ -233,15 +229,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          plane.renderingOrder = -1
       }
       
-      table.constraints = []
-      tableConstraint.removeFromParentNode()
-      
       let tableModel = table.childNode(withName: "table", recursively: false)!
-      tableModel.physicsBody?.type = .static
       let netModel = table.childNode(withName: "net", recursively: false)!
+      
+      tableModel.physicsBody?.type = .static
       netModel.physicsBody?.type = .static
       
       
+      
+      table.constraints = []
+      tableConstraint.removeFromParentNode()
       table.opacity = 1
       
       gameState.currentState = .ready
@@ -253,7 +250,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    func addPaddleAndBall() {
       paddle = SCNNode(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025))
-      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
+      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
       paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.green
       paddle.position = SCNVector3(0.1, -0.15, -0.6)
       
@@ -270,21 +267,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    func addAI() {
       aiPaddle = SCNNode(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025))
-      aiPaddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
+      aiPaddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
       aiPaddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
-      aiPaddle.position = SCNVector3(0, 0.3, -1.75)
+      
+      if !tableIsHalved! {
+         aiPaddle.position = SCNVector3(0, 0.3, -1.5)
+      } else {
+         aiPaddle.position = SCNVector3(0, 0.3, -0.85)
+      }
+      
+      
       
       paddleConstraint.position = SCNVector3(0,0.4,0)
       
       let constraint = SCNLookAtConstraint(target: paddleConstraint)
       constraint.isGimbalLockEnabled = true
-      constraint.localFront = SCNVector3(0,0,1)
       aiPaddle.constraints = [constraint]
       
       table.addChildNode(aiPaddle)
       table.addChildNode(paddleConstraint)
       
-      aiController = AIController(paddle: aiPaddle, difficulty: .hard)
+      aiController = AIController(paddle: aiPaddle, difficulty: gameDifficulty)
       
    }
    
@@ -301,63 +304,66 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       gameState.currentState = .playing
       
    }
- 
-   // MARK: - Madoc's funcs WIP
-   
-   func hit() {
-      //send ball in direction it is hit
-   }
-   
-   func tableContact(hit: Int) {
-      
-      /*
-       0
-       [1][2]
-       ------
-       [3][4]
-       5
-       */
-      //register area of contact on table, update scoreboard
-      var previousHit = 5
-      var playerScore = 0
-      var AiScore = 0
-      switch hit {
-      case 1,2:
-         if previousHit == 0 {
-            playerScore += 1
-         } else if previousHit == 5 {
-            AiScore += 1
-         } else if previousHit == 3 || previousHit == 4 {
-            AiScore += 1
-         }
-      case 3,4:
-         if previousHit == 0 {
-            AiScore += 1
-         } else if previousHit == 5 {
-            playerScore += 1
-         } else if previousHit == 1 || previousHit == 2 {
-            playerScore += 1
-         }
-      default:
-         break
-         //let test = "test"break
-         
-      }
-      previousHit = hit
-   }
-   
-   func checkPreviousHit() -> Int {
-      let number = 10
-      return number
-   }
-   
-   func ai() {
-      //create opposing paddle which will return ball with some degree of randomness
-   }
-   
-   
    
    // MARK: - Helper Functions
+   
+   func tableSize(half: Bool) {
+      
+      // Very dodgy copy paste here: I apologiese!
+      if let isHalved = tableIsHalved {
+         if isHalved && half {
+            return
+         } else if !isHalved && !half {
+            return
+         }
+         
+         let tableModel = table.childNode(withName: "table", recursively: false)!
+         let netModel = table.childNode(withName: "net", recursively: false)!
+         let tableBox = tableModel.geometry! as! SCNBox
+         let netBox = netModel.geometry! as! SCNBox
+         if half {
+            tableBox.length /= 2
+            tableBox.width /= 2
+            netBox.width /= 2
+            netBox.height /= 2
+            netModel.position.y = 0.088
+            tableModel.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: tableModel.geometry!, options: [SCNPhysicsShape.Option.type : SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin : 0.01]))
+            netModel.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: netModel.geometry!, options: [SCNPhysicsShape.Option.collisionMargin : 0.04, SCNPhysicsShape.Option.type : SCNPhysicsShape.ShapeType.boundingBox]))
+            
+         } else {
+            tableBox.length *= 2
+            tableBox.width *= 2
+            netBox.width *= 2
+            netBox.height *= 2
+            netModel.position.y = 0.126
+            tableModel.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: tableModel.geometry!, options: [SCNPhysicsShape.Option.type : SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin : 0.01]))
+            netModel.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: netModel.geometry!, options: [SCNPhysicsShape.Option.collisionMargin : 0.04, SCNPhysicsShape.Option.type : SCNPhysicsShape.ShapeType.boundingBox]))
+         }
+         
+      } else if !half {
+         return
+      } else {
+      
+         let tableModel = table.childNode(withName: "table", recursively: false)!
+         let netModel = table.childNode(withName: "net", recursively: false)!
+         let tableBox = tableModel.geometry! as! SCNBox
+         let netBox = netModel.geometry! as! SCNBox
+         if half {
+            tableBox.length /= 2
+            tableBox.width /= 2
+            netBox.width /= 2
+            netBox.height /= 2
+            netModel.position.y = 0.088
+            tableModel.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: tableModel.geometry!, options: [SCNPhysicsShape.Option.type : SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin : 0.01]))
+            netModel.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: netModel.geometry!, options: [SCNPhysicsShape.Option.collisionMargin : 0.04, SCNPhysicsShape.Option.type : SCNPhysicsShape.ShapeType.boundingBox]))
+         } else {
+            tableBox.length *= 2
+            tableBox.width *= 2
+            netBox.width *= 2
+            netBox.height *= 2
+         }
+      }
+   }
    
    func resetSession(){
       scnView.session.pause()
@@ -381,6 +387,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       ball = nil
       
       scoreboard = []
+      tableIsHalved = nil
       
       progressButton.isHidden = false
       
@@ -395,6 +402,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       ball.physicsBody = nil
       ball.position = SCNVector3(0.1, 0, -0.6)
       aiController.returnToStart()
+      statusLabel.isHidden = false
       
    }
    
@@ -438,31 +446,25 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          // Finished plane mapping
          // Place table to start with
          if let hit = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
-            addTable(SCNMatrix4(hit.worldTransform))
+            addTable(hit.worldTransform)
             gameState.currentState = .setup
-         } else if let hit = scnView.hitTest(viewCenter, types: .featurePoint).last {
-            addTable(SCNMatrix4(hit.worldTransform))
-            gameState.currentState = .setup
+            
+            statusLabel.text = "Tap to lock the table in place"
+            scnScene.rootNode.addChildNode(tableConstraint)
+            let constraint = SCNLookAtConstraint(target: self.tableConstraint)
+            constraint.isGimbalLockEnabled = true
+            constraint.localFront = SCNVector3(0,0,1)
+            table.constraints = [constraint]
+            
+            table.opacity = 0.5
+            
+            let newConfig = ARWorldTrackingConfiguration()
+            newConfig.isLightEstimationEnabled = true
+            scnView.session.run(newConfig)
          }
-         
-         
-         statusLabel.text = "Tap to lock the table in place"
-         scnScene.rootNode.addChildNode(tableConstraint)
-         let constraint = SCNLookAtConstraint(target: self.tableConstraint)
-         constraint.isGimbalLockEnabled = true
-         constraint.localFront = SCNVector3(0,0,1)
-         table.constraints = [constraint]
-         
-         table.opacity = 0.5
-         
-         let newConfig = ARWorldTrackingConfiguration()
-         newConfig.isLightEstimationEnabled = true
-         scnView.session.run(newConfig)
       case .setup:
          
          if let _ = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
-            anchorTable()
-         } else if let _ = scnView.hitTest(viewCenter, types: .featurePoint).last {
             anchorTable()
          }
          
@@ -505,9 +507,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          DispatchQueue.main.async {
             if let hit = self.scnView.hitTest(self.viewCenter, types: .existingPlaneUsingExtent).first {
                self.table.isHidden = false
-               self.table.transform = SCNMatrix4(hit.worldTransform)
+               self.table.position = SCNMatrix4(hit.worldTransform).worldPosition
                self.tableConstraint.position = SCNVector3(self.scnView.pointOfView!.position.x, self.table.position.y, self.scnView.pointOfView!.position.z)
+               let planeAnchor = hit.anchor as! ARPlaneAnchor
                
+               if planeAnchor.extent.x < 1.4 && planeAnchor.extent.z < 1.4 {
+                  self.tableSize(half: true)
+                  self.tableIsHalved = true
+               } else {
+                  self.tableSize(half: false)
+                  self.tableIsHalved = false
+               }
+             
             } else {
                self.table.isHidden = true
             }
@@ -625,7 +636,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    func session(_ session: ARSession, didFailWithError error: Error) {
       // Present an error message to the user
-      
+      shouldUpdateErrors = true
+      showMessage("An unknown error occured. Restarting.")
+      DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+         self.showMessage(nil)
+         self.resetSession()
+      }
    }
    
    func sessionWasInterrupted(_ session: ARSession) {

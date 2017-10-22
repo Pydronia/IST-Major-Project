@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		04098BDC1F78AA220014C2B4 /* MathHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04098BDB1F78AA220014C2B4 /* MathHelper.swift */; };
+		0424C1C91F99E80B00C05672 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0424C1C81F99E80B00C05672 /* MenuViewController.swift */; };
 		04307CCC1F989C9300CC2316 /* AIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04307CCB1F989C9300CC2316 /* AIController.swift */; };
 		044DFDF51F5CC0B600E0760B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DFDF41F5CC0B600E0760B /* AppDelegate.swift */; };
 		044DFDF91F5CC0B600E0760B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DFDF81F5CC0B600E0760B /* ViewController.swift */; };
@@ -20,6 +21,7 @@
 
 /* Begin PBXFileReference section */
 		04098BDB1F78AA220014C2B4 /* MathHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathHelper.swift; sourceTree = "<group>"; };
+		0424C1C81F99E80B00C05672 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		04307CCB1F989C9300CC2316 /* AIController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIController.swift; sourceTree = "<group>"; };
 		044DFDF11F5CC0B600E0760B /* AR Ping Pong.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR Ping Pong.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		044DFDF41F5CC0B600E0760B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 		044DFDF31F5CC0B600E0760B /* AR Ping Pong */ = {
 			isa = PBXGroup;
 			children = (
+				0424C1C81F99E80B00C05672 /* MenuViewController.swift */,
 				04098BDB1F78AA220014C2B4 /* MathHelper.swift */,
 				04DF1BD01F849398005F6AD2 /* GameState.swift */,
 				04307CCB1F989C9300CC2316 /* AIController.swift */,
@@ -150,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				04098BDC1F78AA220014C2B4 /* MathHelper.swift in Sources */,
+				0424C1C91F99E80B00C05672 /* MenuViewController.swift in Sources */,
 				04DF1BD11F849398005F6AD2 /* GameState.swift in Sources */,
 				044DFDF91F5CC0B600E0760B /* ViewController.swift in Sources */,
 				044DFDF51F5CC0B600E0760B /* AppDelegate.swift in Sources */,
