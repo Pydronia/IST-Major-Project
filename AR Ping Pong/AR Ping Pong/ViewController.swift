@@ -11,7 +11,17 @@ import SceneKit
 import ARKit
 import QuartzCore
 
-class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
+public enum CollisionCategory: UInt32 {
+   case ball = 1
+   case aiPaddle = 2
+   case userPaddle = 4
+   case table = 8
+   case plane = 16
+}
+
+class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SCNPhysicsContactDelegate {
+   
+   // TODO: Scoring!
    
    // MARK: - Variables
    // MARK: Outlets
@@ -26,6 +36,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     
     // MARK: Globals
+   
    var scnScene: SCNScene!
    var gameState: GameState!
    
@@ -37,6 +48,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    public var gameDifficulty: Difficulty = .hard
    
+   var tableContainer: SCNNode!
    var table: SCNNode!
    var paddle: SCNNode!
    var aiPaddle: SCNNode!
@@ -45,10 +57,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    var aiController: AIController!
    
    let tableConstraint = SCNNode()
-   let paddleConstraint = SCNNode()
+   let centerConstraint = SCNNode()
+   let userConstraint = SCNNode()
    
    var shouldUpdateErrors: Bool = true
    var tableIsHalved: Bool? = nil
+   
+   var ping: SCNAudioSource!
+   var pingIsPlaying = false
+   var pong: SCNAudioSource!
+   var pongIsPlaying = false
+   var brrp: SCNAudioSource!
    
    // MARK: Constants
    var viewCenter: CGPoint!
@@ -61,6 +80,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       scnView.delegate = self
       scnView.session.delegate = self
       scnView.isPlaying = true
+      scnScene.physicsWorld.contactDelegate = self
       
       // Ambient light
       
@@ -76,7 +96,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       //DEBUG
       
       //scnView.showsStatistics = true
-      //scnView.debugOptions = .showPhysicsShapes
+      //scnView.debugOptions = ARSCNDebugOptions.showWorldOrigin
       
       
       gameState = GameState(initialState: .planeMapping)
@@ -84,6 +104,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       errorLabel.layer.cornerRadius = 10
       progressButton.layer.cornerRadius = 10
       scoreLabel.layer.cornerRadius = 10
+      
+      
+      // Sounds made by James Greatbanks and his synth!
+      ping = SCNAudioSource(fileNamed: "Resources.scnassets/Effects/ping.m4a")
+      pong = SCNAudioSource(fileNamed: "Resources.scnassets/Effects/pong.m4a")
+      brrp = SCNAudioSource(fileNamed: "Resources.scnassets/Effects/brrp.m4a")
       
    }
    
@@ -127,6 +153,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    override func viewDidAppear(_ animated: Bool) {
       super.viewDidAppear(animated)
       viewCenter = CGPoint(x: scnView.bounds.width/2, y: scnView.bounds.height/2)
+      ping.load()
+      pong.load()
+      brrp.load()
+      // Silently load the audio
+      pong.volume = 0
+      ping.volume = 0
+      brrp.volume = 0
+      playSound(ping, on: scnScene.rootNode)
+      playSound(pong, on: scnScene.rootNode)
+      playSound(brrp, on: scnScene.rootNode)
+      brrp.volume = 1
+      ping.volume = 1
+      pong.volume = 1
    }
    
    override var prefersStatusBarHidden: Bool {
@@ -157,6 +196,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       let fixedCollider = SCNPhysicsShape(shapes: [collider], transforms: [SCNMatrix4MakeTranslation(0, 0, -0.025) as NSValue])
       
       planeNode.physicsBody = SCNPhysicsBody(type: .static, shape: fixedCollider)
+      planeNode.physicsBody?.categoryBitMask = Int(CollisionCategory.plane.rawValue)
       planeNode.eulerAngles.x = Float(.degToRad(-90))
       planeNode.position = SCNVector3(center.x, 0, center.z)
       
@@ -234,12 +274,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       tableModel.physicsBody?.type = .static
       netModel.physicsBody?.type = .static
+      tableModel.physicsBody?.restitution = 0.6
+      netModel.physicsBody?.restitution = 0.4
+      tableModel.physicsBody?.categoryBitMask = Int(CollisionCategory.table.rawValue)
+      netModel.physicsBody?.categoryBitMask = Int(CollisionCategory.table.rawValue)
       
-      
-      
-      table.constraints = []
+      table.constraints!.first!.isEnabled = false
       tableConstraint.removeFromParentNode()
+      table.constraints = []
       table.opacity = 1
+      
+      table.rotation = table.presentation.rotation
       
       gameState.currentState = .ready
       statusLabel.text = "When you're ready, tap to serve the ball!"
@@ -249,27 +294,49 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    }
    
    func addPaddleAndBall() {
-      paddle = SCNNode(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025))
-      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
+      
+      userConstraint.position = tableIsHalved! ? SCNVector3(0, 0.4, -0.343) : SCNVector3(0, 0.4, -0.685)
+      centerConstraint.position = SCNVector3(0,0.4,0)
+      
+      
+      paddle = SCNNode(geometry: SCNBox(width: 0.34, height: 0.25, length: 0.05, chamferRadius: 0.025))
+      paddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.34, height: 0.25, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
       paddle.geometry!.firstMaterial?.diffuse.contents = UIColor.green
-      paddle.position = SCNVector3(0.1, -0.15, -0.6)
+      paddle.position = SCNVector3(0, -0.15, -0.85)
+      paddle.physicsBody?.contactTestBitMask = Int(CollisionCategory.ball.rawValue)
+      paddle.name = "userPaddle"
+      
+      paddle.opacity = 0.6
+      
+      let constraint = SCNLookAtConstraint(target: userConstraint)
+      constraint.isGimbalLockEnabled = true
+      paddle.constraints = [constraint]
       
       ball = SCNNode(geometry: SCNSphere(radius: 0.02))
       ball.geometry!.firstMaterial?.diffuse.contents = UIImage(named: "Resources.scnassets/Textures/sphereTex.png")
-      ball.position = SCNVector3(0.1, 0, -0.6)
+      ball.position = SCNVector3(0, 0.08, -0.6)
       ball.movabilityHint = .movable
       ball.geometry!.firstMaterial?.lightingModel = .physicallyBased
+      ball.name = "ball"
       
       
       scnView.pointOfView!.addChildNode(paddle)
       scnView.pointOfView!.addChildNode(ball)
+      table.addChildNode(centerConstraint)
+      table.addChildNode(userConstraint)
+      
    }
    
    func addAI() {
       aiPaddle = SCNNode(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025))
       aiPaddle.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.17, height: 0.17, length: 0.05, chamferRadius: 0.025), options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.boundingBox, SCNPhysicsShape.Option.collisionMargin: 0.01]))
+      aiPaddle.physicsBody?.categoryBitMask = Int(CollisionCategory.aiPaddle.rawValue)
+      aiPaddle.physicsBody?.contactTestBitMask = Int(CollisionCategory.ball.rawValue)
+      //aiPaddle.physicsBody?.collisionBitMask = Int(~CollisionCategory.ball.rawValue)
       aiPaddle.geometry!.firstMaterial?.diffuse.contents = UIColor.red
-      
+      aiPaddle.name = "aiPaddle"
+     
+      // "I'm gay" - Ujjwal
       if !tableIsHalved! {
          aiPaddle.position = SCNVector3(0, 0.3, -1.5)
       } else {
@@ -278,14 +345,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       
       
       
-      paddleConstraint.position = SCNVector3(0,0.4,0)
-      
-      let constraint = SCNLookAtConstraint(target: paddleConstraint)
+      let constraint = SCNLookAtConstraint(target: centerConstraint)
       constraint.isGimbalLockEnabled = true
       aiPaddle.constraints = [constraint]
       
+      
+      
+      
       table.addChildNode(aiPaddle)
-      table.addChildNode(paddleConstraint)
+      
       
       aiController = AIController(paddle: aiPaddle, difficulty: gameDifficulty)
       
@@ -298,8 +366,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       table.addChildNode(ball)
       ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
       ball.physicsBody?.restitution = 0.9
+      ball.physicsBody?.damping = 0.25
+      ball.physicsBody?.mass = 1.25
+      ball.physicsBody?.categoryBitMask = Int(CollisionCategory.ball.rawValue)
+      ball.physicsBody?.contactTestBitMask = Int(CollisionCategory.table.rawValue)
+      //ball.physicsBody?.collisionBitMask = Int(~CollisionCategory.aiPaddle.rawValue)
       ball.position = scnView.pointOfView!.convertPosition(ball.position, to: table)
-      ball.physicsBody?.applyForce(scnView.pointOfView!.forwardDirection * 7, asImpulse: true)
+      
+      let serveForce: Float = tableIsHalved! ? 7 : 9
+      
+      ball.physicsBody?.applyForce(scnView.pointOfView!.forwardDirection * serveForce, asImpulse: true)
+      ball.name = "ball"
       
       gameState.currentState = .playing
       
@@ -307,9 +384,31 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
    
    // MARK: - Helper Functions
    
+   func playSound(_ audio: SCNAudioSource, on node: SCNNode){
+      if audio == ping && pingIsPlaying {
+         return
+      } else if audio == pong && pongIsPlaying {
+         return
+      }
+      
+      let sound = SCNAction.playAudio(audio, waitForCompletion: true)
+      if audio == ping {
+         pingIsPlaying = true
+      } else if audio == pong {
+         pongIsPlaying = true
+      }
+      node.runAction(sound) {
+         if audio == self.ping {
+            self.pingIsPlaying = false
+         } else if audio == self.pong {
+            self.pongIsPlaying = false
+         }
+      }
+   }
+   
    func tableSize(half: Bool) {
       
-      // Very dodgy copy paste here: I apologiese!
+      // Very dodgy copy paste here: I apologise!
       if let isHalved = tableIsHalved {
          if isHalved && half {
             return
@@ -400,7 +499,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
       ball.removeFromParentNode()
       scnView.pointOfView!.addChildNode(ball)
       ball.physicsBody = nil
-      ball.position = SCNVector3(0.1, 0, -0.6)
+      ball.position = SCNVector3(0, 0.08, -0.6)
       aiController.returnToStart()
       statusLabel.isHidden = false
       
@@ -456,6 +555,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             constraint.localFront = SCNVector3(0,0,1)
             table.constraints = [constraint]
             
+      
             table.opacity = 0.5
             
             let newConfig = ARWorldTrackingConfiguration()
@@ -466,9 +566,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          
          if let _ = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
             anchorTable()
+            sender.isHidden = true
          }
          
-         sender.isHidden = true
+         
       default:
          break
       }
@@ -508,16 +609,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             if let hit = self.scnView.hitTest(self.viewCenter, types: .existingPlaneUsingExtent).first {
                self.table.isHidden = false
                self.table.position = SCNMatrix4(hit.worldTransform).worldPosition
-               self.tableConstraint.position = SCNVector3(self.scnView.pointOfView!.position.x, self.table.position.y, self.scnView.pointOfView!.position.z)
                let planeAnchor = hit.anchor as! ARPlaneAnchor
                
                if planeAnchor.extent.x < 1.4 && planeAnchor.extent.z < 1.4 {
                   self.tableSize(half: true)
                   self.tableIsHalved = true
+                  self.table.position.y += 0.075
                } else {
                   self.tableSize(half: false)
                   self.tableIsHalved = false
+                  self.table.position.y += 0.2
                }
+               self.tableConstraint.position = SCNVector3(self.scnView.pointOfView!.position.x, self.table.position.y, self.scnView.pointOfView!.position.z)
              
             } else {
                self.table.isHidden = true
@@ -599,6 +702,83 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          break
       }
       
+   }
+   
+   // MARK: - SCNPhysicsContactDelegate
+   
+   func returnBall(fromUser: Bool) {
+      
+      if !fromUser {
+         var currentSpeed = ball.physicsBody!.velocity
+         currentSpeed.x /= 3
+         currentSpeed.y = 0
+         currentSpeed.z /= 4
+         ball.physicsBody?.velocity = currentSpeed
+         // Normalise, and convert to world space!!! (stupid docs...) and use presentation
+         let direction = centerConstraint.position - ball.presentation.position
+         let vectorLength = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)
+         let upwardVector: Float = tableIsHalved! ? 0.8 : 0.61
+         let normalisedVector = SCNVector3(direction.x/vectorLength, (direction.y/vectorLength) + upwardVector, direction.z/vectorLength)
+         let correctedDirection = scnScene.rootNode.convertVector(normalisedVector, from: table)
+         
+         if tableIsHalved! {
+            ball.physicsBody?.applyForce(correctedDirection * 2.8, asImpulse: true)
+         } else {
+            ball.physicsBody?.applyForce(correctedDirection * 5.1, asImpulse: true)
+         }
+      } else {
+         // Normalise, and convert to world space!!! (stupid docs...) and use presentation
+         let cameraXDirection = scnView.pointOfView!.presentation.forwardDirection.x
+         let direction = centerConstraint.position - ball.presentation.position
+         let vectorLength = sqrt(direction.y * direction.y + direction.z * direction.z)
+         let upwardVector: Float = tableIsHalved! ? 0.1 : 0.3
+         let normalisedVector = SCNVector3(0, (direction.y/vectorLength) + upwardVector, direction.z/vectorLength)
+         var correctedDirection = scnScene.rootNode.convertVector(normalisedVector, from: table)
+         correctedDirection.x = cameraXDirection
+         if tableIsHalved! {
+            ball.physicsBody?.applyForce(correctedDirection * 1.6, asImpulse: true)
+         } else {
+            ball.physicsBody?.applyForce(correctedDirection * 2.5, asImpulse: true)
+         }
+      }
+      
+      
+      
+   }
+   
+   func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
+      
+      switch contact.nodeA.name! {
+      case "ball":
+         if contact.nodeB.name == "aiPaddle" {
+            playSound(ping, on: contact.nodeB)
+            returnBall(fromUser: false)
+         } else if contact.nodeB.name == "userPaddle" {
+            playSound(ping, on: contact.nodeB)
+            returnBall(fromUser: true)
+            //user return ball
+         } else if contact.nodeB.name == "table" || contact.nodeB.name == "net" {
+            playSound(pong, on: contact.nodeA)
+         }
+      case "aiPaddle":
+         if contact.nodeB.name == "ball" {
+            playSound(ping, on: contact.nodeA)
+            returnBall(fromUser: false)
+         }
+      case "userPaddle":
+         if contact.nodeB.name == "ball" {
+            playSound(ping, on: contact.nodeA)
+            returnBall(fromUser: true)
+            // user return ball
+         }
+      case "table",
+           "net":
+         if contact.nodeB.name == "ball" {
+            playSound(pong, on: contact.nodeB)
+         }
+      default:
+         break
+      }
    }
    
    // MARK: - Error Management

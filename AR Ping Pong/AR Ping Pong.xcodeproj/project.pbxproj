@@ -45,6 +45,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		042107011F9D5EA3009F21C4 /* Helper Classes */ = {
+			isa = PBXGroup;
+			children = (
+				0424C1C81F99E80B00C05672 /* MenuViewController.swift */,
+				04DF1BD01F849398005F6AD2 /* GameState.swift */,
+				04098BDB1F78AA220014C2B4 /* MathHelper.swift */,
+				04307CCB1F989C9300CC2316 /* AIController.swift */,
+			);
+			path = "Helper Classes";
+			sourceTree = "<group>";
+		};
 		044DFDE81F5CC0B600E0760B = {
 			isa = PBXGroup;
 			children = (
@@ -64,10 +75,7 @@
 		044DFDF31F5CC0B600E0760B /* AR Ping Pong */ = {
 			isa = PBXGroup;
 			children = (
-				0424C1C81F99E80B00C05672 /* MenuViewController.swift */,
-				04098BDB1F78AA220014C2B4 /* MathHelper.swift */,
-				04DF1BD01F849398005F6AD2 /* GameState.swift */,
-				04307CCB1F989C9300CC2316 /* AIController.swift */,
+				042107011F9D5EA3009F21C4 /* Helper Classes */,
 				044DFDF81F5CC0B600E0760B /* ViewController.swift */,
 				044DFDF41F5CC0B600E0760B /* AppDelegate.swift */,
 				044DFDFA1F5CC0B600E0760B /* Main.storyboard */,

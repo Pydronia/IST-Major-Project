@@ -63,7 +63,6 @@ public class AIController {
          speed = vectorLength/moveSpeed
       }
       
-      
       paddleNode.position = paddleNode.position + (normalisedVector * speed)
    }
    
