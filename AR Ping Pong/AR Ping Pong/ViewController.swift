@@ -32,7 +32,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
    @IBOutlet weak var progressButton: UIButton!
    @IBOutlet weak var resetButton: UIButton!
    @IBOutlet weak var scoreLabel: UILabel!
-    
+   @IBOutlet weak var finalLabel: UILabel!
+   
+   
     
     
     // MARK: Globals
@@ -43,8 +45,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
    var planeNodes: [SCNNode] = []
    
    var ambLight: SCNNode!
-    
-   var scoreboard: [Int] = []
    
    public var gameDifficulty: Difficulty = .hard
    
@@ -68,6 +68,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
    var pong: SCNAudioSource!
    var pongIsPlaying = false
    var brrp: SCNAudioSource!
+   
+   var previousPos: SCNVector3!
+   //var previousTime: NSDate!
    
    // MARK: Constants
    var viewCenter: CGPoint!
@@ -99,7 +102,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       //scnView.debugOptions = ARSCNDebugOptions.showWorldOrigin
       
       
-      gameState = GameState(initialState: .planeMapping)
+      gameState = GameState(initialState: .planeMapping, vc: self, sl: scoreLabel)
       statusLabel.layer.cornerRadius = 10
       errorLabel.layer.cornerRadius = 10
       progressButton.layer.cornerRadius = 10
@@ -160,9 +163,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       pong.volume = 0
       ping.volume = 0
       brrp.volume = 0
-      playSound(ping, on: scnScene.rootNode)
-      playSound(pong, on: scnScene.rootNode)
-      playSound(brrp, on: scnScene.rootNode)
+      let pongSound = SCNAction.playAudio(pong, waitForCompletion: false)
+      let pingSound = SCNAction.playAudio(ping, waitForCompletion: false)
+      let brrpSound = SCNAction.playAudio(brrp, waitForCompletion: false)
+      scnScene.rootNode.runAction(pingSound)
+      scnScene.rootNode.runAction(pongSound)
+      scnScene.rootNode.runAction(brrpSound)
       brrp.volume = 1
       ping.volume = 1
       pong.volume = 1
@@ -286,6 +292,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       
       table.rotation = table.presentation.rotation
       
+      scoreLabel.isHidden = false
+      scoreLabel.text = "0  :  0"
+      
+      
       gameState.currentState = .ready
       statusLabel.text = "When you're ready, tap to serve the ball!"
       addPaddleAndBall()
@@ -356,12 +366,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       
       
       aiController = AIController(paddle: aiPaddle, difficulty: gameDifficulty)
+      gameState.aiController = aiController
       
    }
    
    // MARK: Serving
    // TODO: serveBallForPlayer
    func serveBall() {
+      resetButton.isHidden = true
+      scoreLabel.isHidden = true
       ball.removeFromParentNode()
       table.addChildNode(ball)
       ball.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: SCNSphere(radius: 0.02), options: nil))
@@ -384,24 +397,45 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
    
    // MARK: - Helper Functions
    
-   func playSound(_ audio: SCNAudioSource, on node: SCNNode){
-      if audio == ping && pingIsPlaying {
-         return
-      } else if audio == pong && pongIsPlaying {
-         return
+   func youWin(){
+      gameState.currentState = .endGame
+      DispatchQueue.main.async {
+         self.finalLabel.layer.cornerRadius = 10
+         self.finalLabel.isHidden = false
+         self.finalLabel.text = "You Win! Tap to restart."
+      }
+   }
+   
+   func youLose(){
+      gameState.currentState = .endGame
+      DispatchQueue.main.async {
+         self.finalLabel.layer.cornerRadius = 10
+         self.finalLabel.isHidden = false
+         self.finalLabel.text = "Game Over... Tap to restart."
       }
       
-      let sound = SCNAction.playAudio(audio, waitForCompletion: true)
-      if audio == ping {
-         pingIsPlaying = true
-      } else if audio == pong {
-         pongIsPlaying = true
-      }
-      node.runAction(sound) {
+   }
+   
+   func playSound(_ audio: SCNAudioSource, on node: SCNNode){
+      DispatchQueue.main.async {
+         if audio == self.ping && self.pingIsPlaying {
+            return
+         } else if audio == self.pong && self.pongIsPlaying {
+            return
+         }
+         // TODO: perhaps change to SCNAudioPlayer
+         let sound = SCNAction.playAudio(audio, waitForCompletion: true)
          if audio == self.ping {
-            self.pingIsPlaying = false
+            self.pingIsPlaying = true
          } else if audio == self.pong {
-            self.pongIsPlaying = false
+           self.pongIsPlaying = true
+         }
+         node.runAction(sound) {
+            if audio == self.ping {
+               self.pingIsPlaying = false
+            } else if audio == self.pong {
+               self.pongIsPlaying = false
+            }
          }
       }
    }
@@ -464,7 +498,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       }
    }
    
-   func resetSession(){
+   func resetSession() {
       scnView.session.pause()
       
       planeNodes = []
@@ -482,13 +516,25 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       }
       
       table = nil
+      tableContainer = nil
       paddle = nil
+      aiPaddle = nil
       ball = nil
       
-      scoreboard = []
       tableIsHalved = nil
+      shouldUpdateErrors = true
       
       progressButton.isHidden = false
+      statusLabel.isHidden = false
+      scoreLabel.isHidden = true
+      
+      gameState.currentSide = .user
+      gameState.lastPaddle = .user
+      gameState.tableOneSideBounce = 0
+      gameState.aiScore = 0
+      gameState.playerScore = 0
+      
+      previousPos = nil
       
       setupView()
       startSession(reset: true)
@@ -501,16 +547,23 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       ball.physicsBody = nil
       ball.position = SCNVector3(0, 0.08, -0.6)
       aiController.returnToStart()
-      statusLabel.isHidden = false
-      
+      resetButton.isHidden = false
+      gameState.currentSide = .user
+      gameState.lastPaddle = .user
+      gameState.tableOneSideBounce = 0
+      previousPos = nil
    }
    
    func showMessage(_ message: String?){
       
       if message == nil {
          errorLabel.isHidden = true
+         if gameState.currentState == .ready {
+            scoreLabel.isHidden = false
+         }
       } else {
          errorLabel.isHidden = false
+         scoreLabel.isHidden = true
          errorLabel.text = message!
       }
       
@@ -567,6 +620,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
          if let _ = scnView.hitTest(viewCenter, types: .existingPlaneUsingExtent).first {
             anchorTable()
             sender.isHidden = true
+            //previousTime = NSDate()
          }
          
          
@@ -590,6 +644,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
          }
          serveBall()
          gameState.currentState = .playing
+      case .endGame:
+         self.performSegue(withIdentifier: "backSegue", sender: nil)
       default:
          break
       }
@@ -631,7 +687,37 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       case .playing:
          DispatchQueue.main.async {
             self.aiController.moveTo(x: self.ball.presentation.position.x, y: self.ball.presentation.position.y)
-            
+            if self.ball.presentation.position.y < -0.15 {
+               
+               if self.gameState.lastPaddle == .user {
+                  if self.gameState.tableOneSideBounce == 0 {
+                     self.playSound(self.brrp, on: self.ball)
+                     self.gameState.scoreFor(.computer)
+                  } else {
+                     if self.gameState.currentSide == .user {
+                        self.playSound(self.brrp, on: self.ball)
+                        self.gameState.scoreFor(.computer)
+                     } else {
+                        self.playSound(self.brrp, on: self.ball)
+                        self.gameState.scoreFor(.user)
+                     }
+                  }
+               } else {
+                  if self.gameState.tableOneSideBounce == 0 {
+                     self.playSound(self.brrp, on: self.ball)
+                     self.gameState.scoreFor(.user)
+                  } else {
+                     if self.gameState.currentSide == .user {
+                        self.playSound(self.brrp, on: self.ball)
+                        self.gameState.scoreFor(.computer)
+                     } else {
+                        self.playSound(self.brrp, on: self.ball)
+                        self.gameState.scoreFor(.user)
+                     }
+                  }
+               }
+               
+            }
          }
       default:
          break
@@ -694,10 +780,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
       
       switch gameState.currentState {
       case .planeMapping:
-         guard anchor is ARPlaneAnchor else { return }
-         for child in node.childNodes {
-            child.removeFromParentNode()
+         DispatchQueue.main.async {
+            guard anchor is ARPlaneAnchor else { return }
+            for child in node.childNodes {
+               child.removeFromParentNode()
+            }
          }
+         
       default:
          break
       }
@@ -717,14 +806,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
          // Normalise, and convert to world space!!! (stupid docs...) and use presentation
          let direction = centerConstraint.position - ball.presentation.position
          let vectorLength = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)
-         let upwardVector: Float = tableIsHalved! ? 0.8 : 0.61
+         let upwardVector: Float = tableIsHalved! ? 0.8 : 0.65
          let normalisedVector = SCNVector3(direction.x/vectorLength, (direction.y/vectorLength) + upwardVector, direction.z/vectorLength)
          let correctedDirection = scnScene.rootNode.convertVector(normalisedVector, from: table)
          
          if tableIsHalved! {
             ball.physicsBody?.applyForce(correctedDirection * 2.8, asImpulse: true)
          } else {
-            ball.physicsBody?.applyForce(correctedDirection * 5.1, asImpulse: true)
+            ball.physicsBody?.applyForce(correctedDirection * 5, asImpulse: true)
          }
       } else {
          // Normalise, and convert to world space!!! (stupid docs...) and use presentation
@@ -747,38 +836,208 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, SC
    }
    
    func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
-      
-      switch contact.nodeA.name! {
-      case "ball":
-         if contact.nodeB.name == "aiPaddle" {
-            playSound(ping, on: contact.nodeB)
-            returnBall(fromUser: false)
-         } else if contact.nodeB.name == "userPaddle" {
-            playSound(ping, on: contact.nodeB)
-            returnBall(fromUser: true)
-            //user return ball
-         } else if contact.nodeB.name == "table" || contact.nodeB.name == "net" {
-            playSound(pong, on: contact.nodeA)
+      // prevent double detections
+      if let previous = previousPos {
+         let direction = previous - ball.presentation.position
+         let distance = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)
+         if distance < 0.075 && tableIsHalved! {
+            return
+         } else if distance < 0.1 && !tableIsHalved! {
+            return
          }
-      case "aiPaddle":
-         if contact.nodeB.name == "ball" {
-            playSound(ping, on: contact.nodeA)
-            returnBall(fromUser: false)
-         }
-      case "userPaddle":
-         if contact.nodeB.name == "ball" {
-            playSound(ping, on: contact.nodeA)
-            returnBall(fromUser: true)
-            // user return ball
-         }
-      case "table",
-           "net":
-         if contact.nodeB.name == "ball" {
-            playSound(pong, on: contact.nodeB)
-         }
-      default:
-         break
       }
+      previousPos = ball.presentation.position
+      
+      if gameState.currentState == .playing {
+         switch contact.nodeA.name! {
+            
+         case "ball":
+            // failsafe
+            if contact.nodeB.name == "aiPaddle" {
+               playSound(ping, on: ball)
+               returnBall(fromUser: false)
+               if gameState.lastPaddle == .user {
+                  gameState.paddleCount = 0
+               }
+               gameState.lastPaddle = .computer
+               gameState.tableOneSideBounce = 0
+               gameState.currentSide = .computer
+               gameState.paddleCount += 1
+               if gameState.paddleCount >= 2 {
+                  playSound(brrp, on: ball)
+                  gameState.scoreFor(.user)
+               }
+            } else if contact.nodeB.name == "userPaddle" {
+               playSound(ping, on: ball)
+               returnBall(fromUser: true)
+               if gameState.lastPaddle == .user {
+                  gameState.paddleCount = 0
+               }
+               gameState.lastPaddle = .user
+               gameState.tableOneSideBounce = 0
+               gameState.currentSide = .user
+               gameState.paddleCount += 1
+               if gameState.paddleCount >= 2 {
+                  playSound(brrp, on: ball)
+                  gameState.scoreFor(.computer)
+               }
+            } else if contact.nodeB.name == "table" {
+               
+               if gameState.lastPaddle == .user {
+                  if ball.presentation.position.z >= 0 {
+                     if gameState.currentSide == .computer {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .user
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the user side twice after being hit by the user paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.computer)
+                     }
+                  } else {
+                     if gameState.currentSide == .user {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .computer
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the computer side twice after being hit by the user paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.user)
+                     }
+                  }
+               } else {
+                  if ball.presentation.position.z >= 0 {
+                     if gameState.currentSide == .computer {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .user
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the user side twice after being hit by the cmp paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.computer)
+                     }
+                  } else {
+                     if gameState.currentSide == .user {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .computer
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the computer side twice after being hit by the cmp paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.user)
+                     }
+                  }
+               }
+               if gameState.currentState == .playing {
+                  playSound(pong, on: ball)
+               }
+               
+            } else if contact.nodeB.name == "net"{
+               playSound(pong, on: ball)
+            }
+         case "aiPaddle":
+            if contact.nodeB.name == "ball" {
+               playSound(ping, on: ball)
+               returnBall(fromUser: false)
+               if gameState.lastPaddle == .user {
+                  gameState.paddleCount = 0
+               }
+               gameState.lastPaddle = .computer
+               gameState.tableOneSideBounce = 0
+               gameState.currentSide = .computer
+               gameState.paddleCount += 1
+               if gameState.paddleCount >= 2 {
+                  playSound(brrp, on: ball)
+                  gameState.scoreFor(.user)
+               }
+            }
+         case "userPaddle":
+            if contact.nodeB.name == "ball" {
+               playSound(ping, on: ball)
+               returnBall(fromUser: true)
+               if gameState.lastPaddle == .computer {
+                  gameState.paddleCount = 0
+               }
+               gameState.lastPaddle = .user
+               gameState.tableOneSideBounce = 0
+               gameState.currentSide = .user
+               gameState.paddleCount += 1
+               if gameState.paddleCount >= 2 {
+                  playSound(brrp, on: ball)
+                  gameState.scoreFor(.computer)
+               }
+            }
+         case "table":
+            if contact.nodeB.name == "ball" {
+               // table
+               
+               if gameState.lastPaddle == .user {
+                  if ball.presentation.position.z >= 0 {
+                     if gameState.currentSide == .computer {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .user
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the user side twice after being hit by the user paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.computer)
+                     }
+                  } else {
+                     if gameState.currentSide == .user {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .computer
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the computer side twice after being hit by the user paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.user)
+                     }
+                  }
+               } else {
+                  if ball.presentation.position.z >= 0 {
+                     if gameState.currentSide == .computer {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .user
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the user side twice after being hit by the cmp paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.computer)
+                     }
+                  } else {
+                     if gameState.currentSide == .user {
+                        gameState.tableOneSideBounce = 0
+                     }
+                     gameState.currentSide = .computer
+                     gameState.tableOneSideBounce += 1
+                     if gameState.tableOneSideBounce >= 2 {
+                        //if it bounces on the computer side twice after being hit by the cmp paddle
+                        playSound(brrp, on: ball)
+                        gameState.scoreFor(.user)
+                     }
+                  }
+               }
+               if gameState.currentState == .playing {
+                  playSound(pong, on: ball)
+               }
+            }
+         case "net":
+            if contact.nodeB.name == "ball" {
+               playSound(pong, on: ball)
+            }
+         default:
+            break
+         }
+         
+      }
+      
    }
    
    // MARK: - Error Management
